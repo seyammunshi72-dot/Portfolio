@@ -7,7 +7,7 @@ import AdminDashboard from './components/AdminDashboard';
 import { LogIn } from 'lucide-react';
 
 function Home() {
-  const { login, user } = useStore();
+  const { login, user, settings } = useStore();
 
   return (
     <div className="bg-[#050505] min-h-screen text-white font-sans selection:bg-brand-primary/30 antialiased bg-noise flex flex-col">
@@ -39,15 +39,15 @@ function Home() {
       {/* Simple Footer/Contact Section */}
       <footer id="contact" className="py-12 border-t border-white/5 relative z-10 mt-12 bg-black/50">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-2xl font-display font-bold tracking-tighter text-white/50">
-            EDIT<span className="text-brand-primary">.</span>
+          <div className="text-2xl font-display font-bold tracking-tighter text-white/50 uppercase">
+            {settings.footerTitle}<span className="text-brand-primary">.</span>
           </div>
           
-          <div className="flex gap-8 text-sm font-medium text-white/50 items-center">
-            <a href="#" className="hover:text-white transition-colors">INSTAGRAM</a>
-            <a href="#" className="hover:text-white transition-colors">WHATSAPP</a>
-            <a href="#" className="hover:text-white transition-colors">EMAIL</a>
-            <a href="#" className="hover:text-white transition-colors">FIVERR</a>
+          <div className="flex flex-wrap justify-center gap-8 text-sm font-medium text-white/50 items-center">
+            {settings.footerLink1Text && <a href={settings.footerLink1Url || '#'} className="hover:text-white transition-colors">{settings.footerLink1Text}</a>}
+            {settings.footerLink2Text && <a href={settings.footerLink2Url || '#'} className="hover:text-white transition-colors">{settings.footerLink2Text}</a>}
+            {settings.footerLink3Text && <a href={settings.footerLink3Url || '#'} className="hover:text-white transition-colors">{settings.footerLink3Text}</a>}
+            {settings.footerLink4Text && <a href={settings.footerLink4Url || '#'} className="hover:text-white transition-colors">{settings.footerLink4Text}</a>}
             
             {user ? (
               <Link to="/admin" className="ml-4 hover:text-brand-primary transition-colors flex items-center gap-2 border border-white/10 px-4 py-2 rounded-full">

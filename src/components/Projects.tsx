@@ -1,35 +1,11 @@
 import { motion } from 'motion/react';
 import { ArrowUpRight } from 'lucide-react';
-
-const projects = [
-  {
-    category: 'DOCUMENTARY',
-    title: 'WILD BEAUTY',
-    duration: '02:45',
-    image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800'
-  },
-  {
-    category: 'SHORT FILM',
-    title: 'LOST IN SPACE',
-    duration: '03:12',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800',
-    featured: true
-  },
-  {
-    category: 'MUSIC VIDEO',
-    title: 'ECHOES OF SILENCE',
-    duration: '04:01',
-    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=800'
-  },
-  {
-    category: 'TRAVEL FILM',
-    title: 'THE ROAD AHEAD',
-    duration: '03:38',
-    image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800'
-  }
-];
+import { useStore } from '../lib/store';
 
 export default function Projects() {
+  const { settings } = useStore();
+  const projects = settings.projects || [];
+
   return (
     <section id="work" className="py-24 relative z-10">
       <div className="max-w-7xl mx-auto px-6">

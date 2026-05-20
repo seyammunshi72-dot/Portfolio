@@ -22,7 +22,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [localSettings, setLocalSettings] = useState<SiteSettings>(settings);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'3d' | 'home' | 'about'>('3d');
+  const [activeTab, setActiveTab] = useState<'3d' | 'home' | 'about' | 'footer'>('3d');
   const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
 
   // Sync settings when they are loaded from Firestore
@@ -95,19 +95,25 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('3d')}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === '3d' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
             >
-              <Monitor className="w-4 h-4" /> 3D Scene
+              <Monitor className="w-4 h-4" /> Home Page (3D)
             </button>
             <button 
               onClick={() => setActiveTab('home')}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === 'home' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
             >
-              <LayoutDashboard className="w-4 h-4" /> Home Page
+              <LayoutDashboard className="w-4 h-4" /> Projects
             </button>
             <button 
               onClick={() => setActiveTab('about')}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === 'about' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
             >
               <User className="w-4 h-4" /> About Page
+            </button>
+            <button 
+              onClick={() => setActiveTab('footer')}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === 'footer' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
+            >
+              <LayoutDashboard className="w-4 h-4" /> Footer Menu
             </button>
           </nav>
         </div>
@@ -365,10 +371,10 @@ export default function AdminDashboard() {
           {activeTab === 'home' && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <section className="bg-white/5 p-6 md:p-8 rounded-2xl border border-white/10">
-                <h2 className="text-2xl font-bold mb-6 text-brand-primary">Home Page Content</h2>
+                <h2 className="text-2xl font-bold mb-6 text-brand-primary">Projects Page Content</h2>
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-white/50 mb-2">Hero Section Subtitle</label>
+                    <label className="block text-sm font-medium text-white/50 mb-2">Projects / Hero Section Subtitle</label>
                     <input 
                       type="text"
                       name="heroText"
@@ -378,6 +384,108 @@ export default function AdminDashboard() {
                     />
                     <p className="mt-2 text-xs text-white/40">This is the text that floats centrally in the 3D scene background on the main page.</p>
                   </div>
+
+                  <div className="border-t border-white/10 pt-6 mt-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-medium text-white">Project List</h3>
+                      <button 
+                        onClick={() => {
+                          const newProjects = [...(localSettings.projects || [])];
+                          newProjects.push({ id: Date.now().toString(), category: 'NEW', title: 'New Project', duration: '00:00', image: '' });
+                          setLocalSettings(prev => ({ ...prev, projects: newProjects }));
+                        }}
+                        className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary px-3 py-1.5 rounded text-sm transition-colors"
+                      >
+                        + Add Project
+                      </button>
+                    </div>
+
+                    <div className="space-y-4">
+                      {localSettings.projects?.map((proj, index) => (
+                        <div key={proj.id || index} className="bg-black/50 p-4 rounded-xl border border-white/5 relative group">
+                          <button 
+                            onClick={() => {
+                              const newProjects = [...(localSettings.projects || [])];
+                              newProjects.splice(index, 1);
+                              setLocalSettings(prev => ({ ...prev, projects: newProjects }));
+                            }}
+                            className="absolute top-4 right-4 text-red-500 opacity-50 hover:opacity-100"
+                          >
+                            Remove
+                          </button>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                            <div>
+                              <label className="block text-xs font-medium text-white/30 mb-1">Title</label>
+                              <input 
+                                type="text" value={proj.title} 
+                                onChange={(e) => {
+                                  const p = [...localSettings.projects];
+                                  p[index].title = e.target.value;
+                                  setLocalSettings(prev => ({ ...prev, projects: p }));
+                                }}
+                                className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-white/30 mb-1">Category</label>
+                              <input 
+                                type="text" value={proj.category} 
+                                onChange={(e) => {
+                                  const p = [...localSettings.projects];
+                                  p[index].category = e.target.value;
+                                  setLocalSettings(prev => ({ ...prev, projects: p }));
+                                }}
+                                className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-white/30 mb-1">Image URL</label>
+                              <input 
+                                type="text" value={proj.image} 
+                                onChange={(e) => {
+                                  const p = [...localSettings.projects];
+                                  p[index].image = e.target.value;
+                                  setLocalSettings(prev => ({ ...prev, projects: p }));
+                                }}
+                                className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                              />
+                            </div>
+                            <div className="flex gap-4">
+                              <div className="flex-1">
+                                <label className="block text-xs font-medium text-white/30 mb-1">Duration</label>
+                                <input 
+                                  type="text" value={proj.duration} 
+                                  onChange={(e) => {
+                                    const p = [...localSettings.projects];
+                                    p[index].duration = e.target.value;
+                                    setLocalSettings(prev => ({ ...prev, projects: p }));
+                                  }}
+                                  className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                                />
+                              </div>
+                              <div className="flex items-center mt-6 gap-2">
+                                <input 
+                                  type="checkbox" checked={proj.featured || false} 
+                                  onChange={(e) => {
+                                    const p = [...localSettings.projects];
+                                    p[index].featured = e.target.checked;
+                                    setLocalSettings(prev => ({ ...prev, projects: p }));
+                                  }}
+                                  className="accent-brand-primary"
+                                />
+                                <span className="text-xs text-white/50">Featured (Glow)</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {(!localSettings.projects || localSettings.projects.length === 0) && (
+                        <p className="text-white/30 text-sm text-center py-4">No projects yet.</p>
+                      )}
+                    </div>
+                  </div>
+
                 </div>
               </section>
             </div>
@@ -388,6 +496,32 @@ export default function AdminDashboard() {
               <section className="bg-white/5 p-6 md:p-8 rounded-2xl border border-white/10">
                 <h2 className="text-2xl font-bold mb-6 text-brand-primary">About Page Content</h2>
                 <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Subtitle</label>
+                      <input type="text" name="aboutSubtitle" value={localSettings.aboutSubtitle || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-brand-primary" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">CV Link Object/URL</label>
+                      <input type="text" name="aboutCvUrl" value={localSettings.aboutCvUrl || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-brand-primary" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Heading Line 1</label>
+                      <input type="text" name="aboutHeading1" value={localSettings.aboutHeading1 || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-brand-primary" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Heading Line 2</label>
+                      <input type="text" name="aboutHeading2" value={localSettings.aboutHeading2 || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-brand-primary" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Heading Line 3 (Colored)</label>
+                      <input type="text" name="aboutHeading3" value={localSettings.aboutHeading3 || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-brand-primary" />
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-white/50 mb-2">About Section Text</label>
                     <textarea 
@@ -396,6 +530,117 @@ export default function AdminDashboard() {
                       onChange={handleChange}
                       className="w-full bg-black/50 border border-white/10 rounded-lg p-4 text-white focus:border-brand-primary outline-none h-48"
                     />
+                  </div>
+
+                  <div className="border-t border-white/10 pt-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">About Image URL (e.g. imgbb link)</label>
+                      <input 
+                        type="text"
+                        name="aboutPhotoUrl"
+                        value={localSettings.aboutPhotoUrl || ''}
+                        onChange={handleChange}
+                        placeholder="https://i.ibb.co/..."
+                        className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Image Size / Width % (10 to 100)</label>
+                      <div className="flex gap-4 items-center h-full">
+                        <input 
+                          type="range" min="10" max="100" name="aboutPhotoSize" value={localSettings.aboutPhotoSize || 100}
+                          onChange={handleChange} className="flex-1 accent-brand-primary"
+                        />
+                        <span className="text-white/50 font-mono w-12 text-right">{localSettings.aboutPhotoSize || 100}%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/10 pt-6 mt-6">
+                    <h3 className="text-lg font-medium text-white mb-4">Stats Section</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="flex gap-2">
+                        <input type="text" name="aboutStat1Num" value={localSettings.aboutStat1Num || ''} onChange={handleChange} placeholder="5+" className="w-1/3 bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none font-bold" />
+                        <input type="text" name="aboutStat1Text" value={localSettings.aboutStat1Text || ''} onChange={handleChange} placeholder="Years Experience" className="w-2/3 bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none" />
+                      </div>
+                      <div className="flex gap-2">
+                        <input type="text" name="aboutStat2Num" value={localSettings.aboutStat2Num || ''} onChange={handleChange} placeholder="150+" className="w-1/3 bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none font-bold" />
+                        <input type="text" name="aboutStat2Text" value={localSettings.aboutStat2Text || ''} onChange={handleChange} placeholder="Projects Completed" className="w-2/3 bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none" />
+                      </div>
+                      <div className="flex gap-2">
+                        <input type="text" name="aboutStat3Num" value={localSettings.aboutStat3Num || ''} onChange={handleChange} placeholder="80+" className="w-1/3 bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none font-bold" />
+                        <input type="text" name="aboutStat3Text" value={localSettings.aboutStat3Text || ''} onChange={handleChange} placeholder="Happy Clients" className="w-2/3 bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none" />
+                      </div>
+                      <div className="flex gap-2">
+                        <input type="text" name="aboutStat4Num" value={localSettings.aboutStat4Num || ''} onChange={handleChange} placeholder="20+" className="w-1/3 bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none font-bold" />
+                        <input type="text" name="aboutStat4Text" value={localSettings.aboutStat4Text || ''} onChange={handleChange} placeholder="Countries Worked" className="w-2/3 bg-black/50 border border-white/10 rounded-lg p-2 text-white outline-none" />
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </section>
+            </div>
+          )}
+
+          {activeTab === 'footer' && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <section className="bg-white/5 p-6 md:p-8 rounded-2xl border border-white/10">
+                <h2 className="text-2xl font-bold mb-6 text-brand-primary">Footer Customization</h2>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-white/50 mb-2">Footer Title</label>
+                    <input 
+                      type="text"
+                      name="footerTitle"
+                      value={localSettings.footerTitle || ''}
+                      onChange={handleChange}
+                      className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-primary outline-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Link 1 Text</label>
+                      <input type="text" name="footerLink1Text" value={localSettings.footerLink1Text || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Link 1 URL</label>
+                      <input type="text" name="footerLink1Url" value={localSettings.footerLink1Url || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Link 2 Text</label>
+                      <input type="text" name="footerLink2Text" value={localSettings.footerLink2Text || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Link 2 URL</label>
+                      <input type="text" name="footerLink2Url" value={localSettings.footerLink2Url || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Link 3 Text</label>
+                      <input type="text" name="footerLink3Text" value={localSettings.footerLink3Text || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Link 3 URL</label>
+                      <input type="text" name="footerLink3Url" value={localSettings.footerLink3Url || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Link 4 Text</label>
+                      <input type="text" name="footerLink4Text" value={localSettings.footerLink4Text || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white/50 mb-2">Link 4 URL</label>
+                      <input type="text" name="footerLink4Url" value={localSettings.footerLink4Url || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
+                    </div>
                   </div>
                 </div>
               </section>

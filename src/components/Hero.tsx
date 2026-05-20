@@ -31,6 +31,7 @@ function CameraAnimator({ setControlsEnabled }: { setControlsEnabled: (v: boolea
       const t = animState.current.progress;
       const easeOutQuart = 1 - Math.pow(1 - t, 4);
       camera.position.lerpVectors(startPos, endPos, easeOutQuart);
+      camera.lookAt(0, 0, 0);
     }
   });
 
@@ -193,6 +194,8 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
           <Environment preset="city" environmentIntensity={0.2} />
           
           <OrbitControls 
+            makeDefault
+            target={[0, 0, 0]}
             enableZoom={controlsEnabled} 
             enablePan={controlsEnabled} 
             enableRotate={controlsEnabled}
