@@ -349,7 +349,7 @@ export default function AdminDashboard() {
                       maxPolarAngle={Math.PI / 1.5}
                       target={[0, 0, 0]}
                     />
-                    <ErrorBoundary fallback={<mesh><boxGeometry args={[1, 1, 1]} /><meshBasicMaterial color="red" wireframe /></mesh>}>
+                    <ErrorBoundary fallbackRender={({error}) => <Html center position={[0, 0, 0]}><div style={{color: 'white', background: 'rgba(255, 0, 0, 0.8)', padding: '10px', borderRadius: '4px', whiteSpace: 'nowrap'}}>3D model failed to load. Please re-upload ibm_5150.glb</div></Html>}>
                       <Suspense fallback={null}>
                         <DeskScene overrideSettings={localSettings} />
                       </Suspense>
