@@ -1,0 +1,69 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A portfolio project entry.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "year": { "type": "string" },
+        "category": { "type": "string" },
+        "order": { "type": "number" },
+        "isVisible": { "type": "boolean" }
+      },
+      "required": ["title", "videoUrl"]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "A message submitted through the contact form.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "email", "message", "createdAt"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Global website settings and content.",
+      "type": "object",
+      "properties": {
+        "screenText": { "type": "string" },
+        "screenTextSize": { "type": "number" },
+        "screenTextColor": { "type": "string" },
+        "screenBgColor": { "type": "string" },
+        "screenGlowStrength": { "type": "number" },
+        "screenFontFamily": { "type": "string" },
+        "screenPhotoUrl": { "type": "string" },
+        "screenImageContrast": { "type": "number" },
+        "screenImageBrightness": { "type": "number" },
+        "screenImageSepia": { "type": "number" },
+        "screenImageHue": { "type": "number" },
+        "screenImageBlur": { "type": "number" },
+        "cameraPositionX": { "type": "number" },
+        "cameraPositionY": { "type": "number" },
+        "cameraPositionZ": { "type": "number" },
+        "heroText": { "type": "string" },
+        "aboutText": { "type": "string" }
+      },
+      "required": []
+    }
+  },
+  "firestore": {
+    "projects": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Publicly visible projects in the portfolio."
+    },
+    "messages": {
+      "schema": { "$ref": "#/entities/ContactMessage" },
+      "description": "Messages sent by visitors to the portfolio owner."
+    },
+    "settings": {
+      "schema": { "$ref": "#/entities/SiteSettings" },
+      "description": "Singleton collection for site settings (e.g., doc id 'site')."
+    }
+  }
+}

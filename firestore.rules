@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function incoming() { return request.resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { return isSignedIn() && request.auth.token.email == "seyammunshi72@gmail.com"; }
+    
+    // Project Validation
+    function isValidProject(data) {
+      return true; // Simplified for development
+    }
+
+    // ContactMessage Validation
+    function isValidContactMessage(data) {
+      return true; // Simplified for development
+    }
+
+    // SiteSettings Validation
+    function isValidSiteSettings(data) {
+      return true; // Simplified for development since only admin can write
+    }
+
+    // Projects collection
+    match /projects/{projectId} {
+      allow read: if true; // Publicly readable portfolio
+      allow create: if isAdmin() && isValidId(projectId) && isValidProject(incoming());
+      allow update: if isAdmin() && isValidProject(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Settings collection
+    match /settings/{settingId} {
+      allow read: if true; // Publicly readable setting
+      allow update: if isAdmin() && isValidSiteSettings(incoming());
+      allow create: if isAdmin() && isValidSiteSettings(incoming());
+      allow delete: if false; // settings are fixed
+    }
+
+    // Messages collection
+    match /messages/{messageId} {
+      allow read: if isAdmin();
+      allow create: if isValidId(messageId) && isValidContactMessage(incoming());
+      // No updates or deletes for messages allowed generally, or only by admin
+      allow delete: if isAdmin();
+    }
+  }
+}

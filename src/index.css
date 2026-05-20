@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  --color-glass-5: rgba(255, 255, 255, 0.03);
+  --color-glass-10: rgba(255, 255, 255, 0.08);
+  --color-glass-border: rgba(255, 255, 255, 0.05);
+
+  --color-brand-primary: #ff5533; 
+  --color-brand-secondary: #ff8566; 
+}
+
+@utility glass-panel {
+  background-color: var(--color-glass-5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-glass-border);
+}
+
+@utility text-glow {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+@utility text-glow-brand {
+  text-shadow: 0 0 20px rgba(255, 85, 51, 0.5);
+}
+
+@utility bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+}
+
+body {
+  background-color: #050505;
+  color: #fff;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #030303;
+}
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+.quill-editor-wrapper .ql-container {
+  min-height: 200px;
+  font-size: 16px;
+  font-family: monospace;
+}
+.quill-editor-wrapper .ql-editor {
+  min-height: 200px;
+}
+
+/* Fallbacks for Quill custom sizes in case inline styles are not applied */
+.ql-editor .ql-size-small { font-size: 0.75em !important; }
+.ql-editor .ql-size-large { font-size: 1.5em !important; }
+.ql-editor .ql-size-huge { font-size: 2.5em !important; }
+.ql-editor .ql-size-10px { font-size: 10px !important; }
+.ql-editor .ql-size-14px { font-size: 14px !important; }
+.ql-editor .ql-size-16px { font-size: 16px !important; }
+.ql-editor .ql-size-18px { font-size: 18px !important; }
+.ql-editor .ql-size-24px { font-size: 24px !important; }
+.ql-editor .ql-size-32px { font-size: 32px !important; }
+.ql-editor .ql-size-48px { font-size: 48px !important; }
+.ql-editor .ql-size-64px { font-size: 64px !important; }
+.ql-editor .ql-size-80px { font-size: 80px !important; }
+.ql-editor .ql-size-100px { font-size: 100px !important; }
+
+.ql-editor .ql-align-center { text-align: center !important; }
+.ql-editor .ql-align-right { text-align: right !important; }
+.ql-editor .ql-align-justify { text-align: justify !important; }
+
+/* Ensure base text inherits but can be overridden */
+.ql-editor p {
+  margin: 0;
+  padding: 0;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.typing-cursor {
+  display: inline-block;
+  margin-left: 2px;
+}
