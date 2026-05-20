@@ -207,7 +207,7 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
             <SolarSystemBg />
           </Suspense>
 
-          <ErrorBoundary fallbackRender={({error}) => <Html center position={[0, 0, 0]}><div style={{color: 'red', background: 'black', padding: '10px'}}>{error.message}</div></Html>}>
+          <ErrorBoundary fallback={<mesh scale={[10, 10, 10]}><boxGeometry /><meshBasicMaterial color="red" wireframe /></mesh>}>
             <Suspense fallback={null}>
               <DeskScene overrideSettings={settings} />
             </Suspense>

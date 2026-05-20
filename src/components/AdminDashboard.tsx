@@ -349,7 +349,7 @@ export default function AdminDashboard() {
                       maxPolarAngle={Math.PI / 1.5}
                       target={[0, 0, 0]}
                     />
-                    <ErrorBoundary fallbackRender={({error}) => <Html center><div style={{color:'red', background:'black', padding:'10px'}}>{error.message}</div></Html>}>
+                    <ErrorBoundary fallback={<mesh><boxGeometry args={[1, 1, 1]} /><meshBasicMaterial color="red" wireframe /></mesh>}>
                       <Suspense fallback={null}>
                         <DeskScene overrideSettings={localSettings} />
                       </Suspense>
