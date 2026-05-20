@@ -8,7 +8,7 @@ import { useStore, SiteSettings } from '../lib/store';
 function ComputerModel({ overrideSettings }: { overrideSettings?: SiteSettings }) {
   const { settings: globalSettings } = useStore();
   const settings = overrideSettings || globalSettings;
-  const { scene } = useGLTF('/ibm_5150.glb');
+  const { scene } = useGLTF('/ibm_desktop.glb');
   const ref = useRef<THREE.Group>(null);
   
   const screenMesh = useMemo(() => {

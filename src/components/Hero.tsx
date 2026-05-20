@@ -202,9 +202,13 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
             maxPolarAngle={Math.PI} 
           />
           <CameraAnimator setControlsEnabled={setControlsEnabled} />
-          <ErrorBoundary fallback={<mesh><boxGeometry args={[10, 10, 10]} /><meshBasicMaterial color="red" wireframe /></mesh>}>
+          
+          <Suspense fallback={null}>
+            <SolarSystemBg />
+          </Suspense>
+
+          <ErrorBoundary fallback={<mesh scale={[10, 10, 10]}><boxGeometry /><meshBasicMaterial color="red" wireframe /></mesh>}>
             <Suspense fallback={null}>
-              <SolarSystemBg />
               <DeskScene overrideSettings={settings} />
             </Suspense>
           </ErrorBoundary>
