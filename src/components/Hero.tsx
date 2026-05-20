@@ -4,6 +4,7 @@ import { OrbitControls, Stars, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import DeskScene from './DeskScene';
 import { useStore, SiteSettings } from '../lib/store';
+import { ErrorBoundary } from 'react-error-boundary';
 
 function CameraAnimator({ setControlsEnabled }: { setControlsEnabled: (v: boolean) => void }) {
   const { camera } = useThree();
@@ -201,10 +202,12 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
             maxPolarAngle={Math.PI} 
           />
           <CameraAnimator setControlsEnabled={setControlsEnabled} />
-          <Suspense fallback={null}>
-            <SolarSystemBg />
-            <DeskScene overrideSettings={settings} />
-          </Suspense>
+          <ErrorBoundary fallback={<mesh><boxGeometry args={[10, 10, 10]} /><meshBasicMaterial color="red" wireframe /></mesh>}>
+            <Suspense fallback={null}>
+              <SolarSystemBg />
+              <DeskScene overrideSettings={settings} />
+            </Suspense>
+          </ErrorBoundary>
         </Canvas>
       </div>
 

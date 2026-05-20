@@ -2,6 +2,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useStore, SiteSettings } from '../lib/store';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, LogOut, Monitor, LayoutDashboard, User } from 'lucide-react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
@@ -348,9 +349,11 @@ export default function AdminDashboard() {
                       maxPolarAngle={Math.PI / 1.5}
                       target={[0, 0, 0]}
                     />
-                    <Suspense fallback={null}>
-                      <DeskScene overrideSettings={localSettings} />
-                    </Suspense>
+                    <ErrorBoundary fallback={<mesh><boxGeometry args={[1, 1, 1]} /><meshBasicMaterial color="red" wireframe /></mesh>}>
+                      <Suspense fallback={null}>
+                        <DeskScene overrideSettings={localSettings} />
+                      </Suspense>
+                    </ErrorBoundary>
                   </Canvas>
                 </div>
                 <p className="mt-4 text-white/40 text-sm text-center">Interactive 3D preview. Drag to rotate, scroll to zoom.</p>
