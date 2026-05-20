@@ -9,7 +9,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import MonitorScreen from './MonitorScreen';
 import Hero from './Hero';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Html } from '@react-three/drei';
 import DeskScene from './DeskScene';
 import * as THREE from 'three';
 
@@ -349,7 +349,7 @@ export default function AdminDashboard() {
                       maxPolarAngle={Math.PI / 1.5}
                       target={[0, 0, 0]}
                     />
-                    <ErrorBoundary fallback={<mesh><boxGeometry args={[1, 1, 1]} /><meshBasicMaterial color="red" wireframe /></mesh>}>
+                    <ErrorBoundary fallbackRender={({error}) => <Html center><div style={{color:'red', background:'black', padding:'10px'}}>{error.message}</div></Html>}>
                       <Suspense fallback={null}>
                         <DeskScene overrideSettings={localSettings} />
                       </Suspense>

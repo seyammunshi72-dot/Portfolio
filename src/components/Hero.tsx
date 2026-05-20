@@ -1,6 +1,6 @@
 import { Suspense, useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Stars, Environment } from '@react-three/drei';
+import { OrbitControls, Stars, Environment, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import DeskScene from './DeskScene';
 import { useStore, SiteSettings } from '../lib/store';
@@ -207,7 +207,7 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
             <SolarSystemBg />
           </Suspense>
 
-          <ErrorBoundary fallback={<mesh scale={[10, 10, 10]}><boxGeometry /><meshBasicMaterial color="red" wireframe /></mesh>}>
+          <ErrorBoundary fallbackRender={({error}) => <Html center position={[0, 0, 0]}><div style={{color: 'red', background: 'black', padding: '10px'}}>{error.message}</div></Html>}>
             <Suspense fallback={null}>
               <DeskScene overrideSettings={settings} />
             </Suspense>
