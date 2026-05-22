@@ -8,13 +8,13 @@ import { useStore, SiteSettings } from '../lib/store';
 function ComputerModel({ overrideSettings }: { overrideSettings?: SiteSettings }) {
   const { settings: globalSettings } = useStore();
   const settings = overrideSettings || globalSettings;
-  const { scene } = useGLTF('/ibm_5150.glb?v=1');
+  const { scene } = useGLTF('/computer_model.glb');
   const ref = useRef<THREE.Group>(null);
   
   const screenMesh = useMemo(() => {
     let found: THREE.Mesh | null = null;
     scene.traverse((child) => {
-      if (child.name === 'Plane_Pantalla_0') {
+      if (child.name && child.name.toLowerCase().includes('screen')) {
         found = child as THREE.Mesh;
         if (found.material) {
           const mat = found.material as THREE.MeshStandardMaterial;
@@ -32,27 +32,24 @@ function ComputerModel({ overrideSettings }: { overrideSettings?: SiteSettings }
 
   return (
     <group ref={ref} position={[settings.cameraPositionX, settings.cameraPositionY, settings.cameraPositionZ]} rotation={[0, -0.1, 0]}>
-      <primitive object={scene} scale={0.045} />
+      {/* We need to use generic scale/position since we don't know the exact computer_model.glb scale without viewing it. */}
+      <primitive object={scene} scale={2} position={[0, -1, 0]} />
       
-      {/* We use createPortal to inject our 3D UI directly into the 3D screen's coordinate space! */}
-      {screenMesh && createPortal(
-        <Html
-          transform
-          position={[settings.portalPosX ?? -0.002, settings.portalPosY ?? 0.048, settings.portalPosZ ?? 0.485]} 
-          rotation={[0, 0, 0]}
-          scale={settings.portalScale ?? 0.00085}
-          zIndexRange={[100, 0]}
-          occlude="blending"
+      <Html
+        transform
+        position={[0, 0, 0.5]} 
+        rotation={[0, 0, 0]}
+        scale={0.1}
+        zIndexRange={[100, 0]}
+        occlude="blending"
+      >
+        <div 
+          style={{ width: `1000px`, height: `660px`, backfaceVisibility: 'hidden', borderRadius: `20px` }} 
+          className="pointer-events-auto overflow-hidden flex flex-col relative box-border bg-black border-[8px] border-[#222]"
         >
-          <div 
-            style={{ width: `${settings.portalWidth ?? 800}px`, height: `${settings.portalHeight ?? 600}px`, backfaceVisibility: 'hidden', borderRadius: `${settings.portalBorderRadius ?? 80}px` }} 
-            className="pointer-events-auto overflow-hidden flex flex-col relative box-border bg-black"
-          >
-            <MonitorScreen overrideSettings={settings} />
-          </div>
-        </Html>,
-        screenMesh
-      )}
+          <MonitorScreen overrideSettings={settings} />
+        </div>
+      </Html>
     </group>
   );
 }
@@ -73,4 +70,5 @@ export default function DeskScene({ overrideSettings }: { overrideSettings?: Sit
   );
 }
 
-useGLTF.preload('/ibm_5150.glb?v=1');
+
+

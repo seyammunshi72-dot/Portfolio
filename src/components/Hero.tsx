@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, Environment, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import DeskScene from './DeskScene';
+import MonitorScreen from './MonitorScreen';
 import { useStore, SiteSettings } from '../lib/store';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -210,7 +211,40 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
             <SolarSystemBg />
           </Suspense>
 
-          <ErrorBoundary fallbackRender={({error}) => <Html center position={[0, 0, 0]}><div style={{color: 'white', background: 'rgba(255, 0, 0, 0.8)', padding: '10px', borderRadius: '4px', whiteSpace: 'nowrap'}}>3D model failed to load. Please re-upload ibm_5150.glb</div></Html>}>
+          <ErrorBoundary fallbackRender={({error}) => (
+            <group position={[0, -1, 0]}>
+              {/* Stand */}
+              <mesh position={[0, 0.4, 0]}>
+                <cylinderGeometry args={[0.3, 0.4, 0.8]} />
+                <meshStandardMaterial color="#555" />
+              </mesh>
+              {/* Base */}
+              <mesh position={[0, 0.1, 0]}>
+                <boxGeometry args={[1.5, 0.1, 1]} />
+                <meshStandardMaterial color="#666" />
+              </mesh>
+              {/* Monitor */}
+              <mesh position={[0, 1.5, 0]} rotation={[-0.1, 0, 0]}>
+                <boxGeometry args={[3.2, 2.2, 0.2]} />
+                <meshStandardMaterial color="#333" />
+              </mesh>
+              <Html
+                transform
+                position={[0, 1.5, 0.11]} 
+                rotation={[-0.1, 0, 0]}
+                scale={0.03}
+                zIndexRange={[100, 0]}
+                occlude="blending"
+              >
+                <div 
+                  style={{ width: `1000px`, height: `660px`, backfaceVisibility: 'hidden', borderRadius: `20px` }} 
+                  className="pointer-events-auto overflow-hidden flex flex-col relative box-border bg-black border-[12px] border-[#222]"
+                >
+                  <MonitorScreen overrideSettings={settings} />
+                </div>
+              </Html>
+            </group>
+          )}>
             <Suspense fallback={null}>
               <DeskScene overrideSettings={settings} />
             </Suspense>
