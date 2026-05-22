@@ -161,18 +161,18 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
       className="relative w-full h-[100svh] bg-[#050505] overflow-hidden text-white font-sans bg-noise flex flex-col justify-center items-center"
     >
       {/* 4 Corner Navigation Details */}
-      <div className="absolute top-8 left-8 lg:top-12 lg:left-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/50 hover:text-white cursor-pointer transition-colors duration-300">
-        SEYAM
-      </div>
-      <div className="absolute top-8 right-8 lg:top-12 lg:right-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/50 hover:text-white transition-colors duration-300 cursor-pointer">
-        PROFILE
-      </div>
-      <div className="absolute bottom-8 left-8 lg:bottom-12 lg:left-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/30 hover:text-white transition-colors cursor-pointer">
-        2024
-      </div>
-      <div className="absolute bottom-8 right-8 lg:bottom-12 lg:right-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/50 hover:text-white transition-colors duration-300 cursor-pointer">
-        REEL
-      </div>
+      <a href="#home" className="absolute top-8 left-8 lg:top-12 lg:left-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/50 hover:text-white cursor-pointer transition-colors duration-300">
+        HOME
+      </a>
+      <a href="#about" className="absolute top-8 right-8 lg:top-12 lg:right-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/50 hover:text-white transition-colors duration-300 cursor-pointer">
+        ABOUT
+      </a>
+      <a href="#contact" className="absolute bottom-8 left-8 lg:bottom-12 lg:left-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/30 hover:text-white transition-colors cursor-pointer">
+        CONTACT
+      </a>
+      <a href="#work" className="absolute bottom-8 right-8 lg:bottom-12 lg:right-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/50 hover:text-white transition-colors duration-300 cursor-pointer">
+        WORK
+      </a>
 
       {onExitPreview && (
         <button 
