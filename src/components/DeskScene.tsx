@@ -8,7 +8,7 @@ import { useStore, SiteSettings } from '../lib/store';
 function ComputerModel({ overrideSettings }: { overrideSettings?: SiteSettings }) {
   const { settings: globalSettings } = useStore();
   const settings = overrideSettings || globalSettings;
-  const { scene } = useGLTF('/ibm_desktop.glb');
+  const { scene } = useGLTF('/ibm_5150.glb?v=3');
   const ref = useRef<THREE.Group>(null);
   
   const screenMesh = useMemo(() => {
@@ -17,16 +17,13 @@ function ComputerModel({ overrideSettings }: { overrideSettings?: SiteSettings }
       if (child.name === 'Plane_Pantalla_0') {
         found = child as THREE.Mesh;
         if (found.material) {
-          const mats = Array.isArray(found.material) ? found.material : [found.material];
-          mats.forEach(m => {
-            const mat = m as THREE.MeshStandardMaterial;
-            if (mat.color) mat.color.set('#030A03');
-            mat.roughness = 0.1;
-            mat.metalness = 0.5;
-            if (mat.emissive) mat.emissive.set('#000000');
-            mat.map = null;
-            mat.emissiveMap = null;
-          });
+          const mat = found.material as THREE.MeshStandardMaterial;
+          mat.color.set('#030A03');
+          mat.roughness = 0.1;
+          mat.metalness = 0.5;
+          mat.emissive.set('#000000');
+          mat.map = null;
+          mat.emissiveMap = null;
         }
       }
     });
@@ -69,11 +66,10 @@ export default function DeskScene({ overrideSettings }: { overrideSettings?: Sit
       <Environment preset="city" />
 
       <Suspense fallback={null}>
-        <ComputerModel overrideSettings={overrideSettings} />
+         <ComputerModel overrideSettings={overrideSettings} />
       </Suspense>
-
     </group>
   );
 }
 
-useGLTF.preload('/ibm_desktop.glb');
+useGLTF.preload('/ibm_5150.glb?v=3');
