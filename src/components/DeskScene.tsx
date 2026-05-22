@@ -8,7 +8,7 @@ import { useStore, SiteSettings } from '../lib/store';
 function ComputerModel({ overrideSettings }: { overrideSettings?: SiteSettings }) {
   const { settings: globalSettings } = useStore();
   const settings = overrideSettings || globalSettings;
-  const { scene } = useGLTF('/ibm_5150.glb?v=4');
+  const { scene } = useGLTF('/ibm_5150.glb?v=7');
   const ref = useRef<THREE.Group>(null);
   
   const screenMesh = useMemo(() => {
@@ -72,4 +72,4 @@ export default function DeskScene({ overrideSettings }: { overrideSettings?: Sit
   );
 }
 
-useGLTF.preload('/ibm_5150.glb?v=4');
+useGLTF.preload('/ibm_5150.glb?v=7');
