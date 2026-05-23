@@ -1,10 +1,34 @@
 import { Suspense, useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Stars, Environment, Html } from '@react-three/drei';
+import { OrbitControls, Stars, Environment, Html, useProgress } from '@react-three/drei';
 import * as THREE from 'three';
 import DeskScene from './DeskScene';
 import { useStore, SiteSettings } from '../lib/store';
 import { ErrorBoundary } from 'react-error-boundary';
+
+function ModelLoader() {
+  const { progress } = useProgress();
+  return (
+    <Html center zIndexRange={[100, 0]}>
+      <div className="flex flex-col items-center justify-center w-64 p-6 bg-black/80 backdrop-blur-md rounded-xl border border-white/10 shadow-[0_0_40px_rgba(51,255,51,0.15)] relative overflow-hidden">
+        <div className="absolute inset-0 bg-brand-primary opacity-5 animate-pulse" />
+        <div className="text-brand-primary text-xs font-mono mb-4 uppercase tracking-widest flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-brand-primary animate-ping" />
+          System Booting
+        </div>
+        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden shadow-inner relative">
+          <div 
+            className="h-full bg-brand-primary transition-all duration-300 ease-out shadow-[0_0_10px_#33ff33]" 
+            style={{ width: `${progress}%` }} 
+          />
+        </div>
+        <div className="text-brand-primary/80 font-mono mt-3 text-[10px] w-full text-right tracking-wider">
+          [{progress.toFixed(0)}%]
+        </div>
+      </div>
+    </Html>
+  );
+}
 
 function CameraAnimator({ setControlsEnabled }: { setControlsEnabled: (v: boolean) => void }) {
   const { camera } = useThree();
@@ -196,8 +220,8 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
           <OrbitControls 
             makeDefault
             target={[0, 0, 0]}
-            enableZoom={controlsEnabled} 
-            enablePan={controlsEnabled} 
+            enableZoom={false} 
+            enablePan={false} 
             enableRotate={controlsEnabled}
             minDistance={5} 
             maxDistance={80} 
@@ -211,7 +235,7 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
           </Suspense>
 
           <ErrorBoundary fallbackRender={({error}) => <Html center position={[0, 0, 0]}><div style={{color: 'white', background: 'rgba(255, 0, 0, 0.8)', padding: '10px', borderRadius: '4px', whiteSpace: 'nowrap'}}>3D model failed to load: {error?.message || 'Unknown error'}</div></Html>}>
-            <Suspense fallback={null}>
+            <Suspense fallback={<ModelLoader />}>
               <DeskScene overrideSettings={settings} />
             </Suspense>
           </ErrorBoundary>

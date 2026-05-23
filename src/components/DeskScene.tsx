@@ -1,6 +1,6 @@
 import { Html, Environment, useGLTF } from '@react-three/drei';
 import React, { Suspense, useRef, useMemo } from 'react';
-import { useFrame, createPortal } from '@react-three/fiber';
+import { createPortal } from '@react-three/fiber';
 import * as THREE from 'three';
 import MonitorScreen from './MonitorScreen';
 import { useStore, SiteSettings } from '../lib/store';
