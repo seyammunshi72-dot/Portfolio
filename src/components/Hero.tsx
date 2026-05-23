@@ -220,8 +220,8 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
           <OrbitControls 
             makeDefault
             target={[0, 0, 0]}
-            enableZoom={true} 
-            enablePan={true} 
+            enableZoom={false} 
+            enablePan={false} 
             enableRotate={controlsEnabled}
             minDistance={2} 
             maxDistance={150} 
