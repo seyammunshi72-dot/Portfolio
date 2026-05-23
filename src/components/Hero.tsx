@@ -208,8 +208,8 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
         </button>
       )}
 
-      <div className="absolute inset-0 z-10 w-full h-full pointer-events-none">
-        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={[1, 2]} style={{ pointerEvents: 'auto', touchAction: 'auto' }}>
+      <div className="absolute inset-0 z-0 w-full h-full pointer-events-none overflow-hidden">
+        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={[1, 2]} style={{ pointerEvents: 'none' }}>
           <color attach="background" args={['#050505']} />
           <fog attach="fog" args={['#050505', 40, 250]} />
           
