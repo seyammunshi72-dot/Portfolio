@@ -96,21 +96,21 @@ function SolarSystemBg() {
     <group ref={groupRef} position={[-90, 10, -120]} rotation={[0.15, 0.2, -0.1]}>
       {/* Huge Glowing Sun */}
       <mesh>
-        <sphereGeometry args={[35, 64, 64]} />
+        <sphereGeometry args={[35, 32, 32]} />
         <meshBasicMaterial color="#ff4400" />
       </mesh>
       {/* Bright Core glow */}
       <mesh ref={sunGlowRef}>
-        <sphereGeometry args={[38, 64, 64]} />
+        <sphereGeometry args={[38, 32, 32]} />
         <meshBasicMaterial color="#ff7700" transparent opacity={0.6} blending={THREE.AdditiveBlending} depthWrite={false} />
       </mesh>
       {/* Outer Corona Glow */}
       <mesh>
-        <sphereGeometry args={[65, 64, 64]} />
+        <sphereGeometry args={[65, 32, 32]} />
         <meshBasicMaterial color="#ff2200" transparent opacity={0.15} blending={THREE.AdditiveBlending} depthWrite={false} />
       </mesh>
       <mesh>
-        <sphereGeometry args={[100, 64, 64]} />
+        <sphereGeometry args={[100, 24, 24]} />
         <meshBasicMaterial color="#ff1100" transparent opacity={0.05} blending={THREE.AdditiveBlending} depthWrite={false} />
       </mesh>
       
@@ -121,7 +121,7 @@ function SolarSystemBg() {
       {/* Orbital Tracks */}
       {orbits.map((orbit, i) => (
         <mesh key={`orbit-${i}`} rotation={[Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[orbit.radius, orbit.radius + orbit.thickness, 128]} />
+          <ringGeometry args={[orbit.radius, orbit.radius + orbit.thickness, 64]} />
           <meshBasicMaterial 
             color="#ff6600" 
             transparent 
@@ -142,12 +142,12 @@ function SolarSystemBg() {
           <group key={`planet-${i}`}>
             {/* Planet Mesh */}
             <mesh position={[x, 0, z]}>
-              <sphereGeometry args={[planet.size, 64, 64]} />
+              <sphereGeometry args={[planet.size, 24, 24]} />
               <meshStandardMaterial color={planet.color} roughness={0.4} metalness={0.2} />
               
               {/* Atmosphere Glow */}
               <mesh>
-                <sphereGeometry args={[planet.size * 1.15, 32, 32]} />
+                <sphereGeometry args={[planet.size * 1.15, 16, 16]} />
                 <meshBasicMaterial color={planet.color} transparent opacity={0.2} blending={THREE.AdditiveBlending} depthWrite={false} />
               </mesh>
               
@@ -156,12 +156,12 @@ function SolarSystemBg() {
                 <group rotation={[Math.PI / 2.2, 0.1, 0]}>
                   {/* Dense inner ring */}
                   <mesh>
-                    <ringGeometry args={[planet.size * 1.4, planet.size * 2.0, 128]} />
+                    <ringGeometry args={[planet.size * 1.4, planet.size * 2.0, 64]} />
                     <meshStandardMaterial color={planet.ringColor} transparent opacity={0.9} side={THREE.DoubleSide} />
                   </mesh>
                   {/* Translucent outer ring */}
                   <mesh>
-                    <ringGeometry args={[planet.size * 2.02, planet.size * 2.6, 128]} />
+                    <ringGeometry args={[planet.size * 2.02, planet.size * 2.6, 64]} />
                     <meshStandardMaterial color={planet.ringColor} transparent opacity={0.4} side={THREE.DoubleSide} />
                   </mesh>
                 </group>
@@ -216,12 +216,14 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
         </button>
       )}
 
-      <div className={`absolute inset-0 z-0 w-full h-full cursor-grab active:cursor-grabbing ${isMobile ? 'pointer-events-none' : ''}`}>
-        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={[1, 2]} style={{ touchAction: isMobile ? 'auto' : 'none' }}>
+      <div 
+        className="absolute inset-0 z-0 w-full h-full cursor-grab active:cursor-grabbing max-md:pointer-events-none"
+      >
+        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={[1, 1.5]} style={{ touchAction: 'auto' }} performance={{ min: 0.5 }}>
           <color attach="background" args={['#050505']} />
           <fog attach="fog" args={['#050505', 40, 250]} />
           
-          <Stars radius={150} depth={50} count={10000} factor={6} saturation={1} fade speed={0.5} />
+          <Stars radius={150} depth={50} count={3000} factor={6} saturation={1} fade speed={0.5} />
           <ambientLight intensity={0.5} />
           <Environment preset="city" environmentIntensity={0.2} />
 
