@@ -220,13 +220,11 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
           <OrbitControls 
             makeDefault
             target={[0, 0, 0]}
-            enableZoom={false} 
-            enablePan={false} 
+            enableZoom={true} 
+            enablePan={true} 
             enableRotate={controlsEnabled}
-            minDistance={5} 
-            maxDistance={80} 
-            minPolarAngle={0} 
-            maxPolarAngle={Math.PI} 
+            minDistance={2} 
+            maxDistance={150} 
           />
           
           <CameraAnimator setControlsEnabled={setControlsEnabled} />
