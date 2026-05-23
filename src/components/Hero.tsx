@@ -208,14 +208,26 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
         </button>
       )}
 
-      <div className="absolute inset-0 z-0 w-full h-full pointer-events-none overflow-hidden">
-        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={[1, 2]} style={{ pointerEvents: 'none' }}>
+      <div className="absolute inset-0 z-0 w-full h-full cursor-grab active:cursor-grabbing">
+        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={[1, 2]}>
           <color attach="background" args={['#050505']} />
           <fog attach="fog" args={['#050505', 40, 250]} />
           
           <Stars radius={150} depth={50} count={10000} factor={6} saturation={1} fade speed={0.5} />
           <ambientLight intensity={0.5} />
           <Environment preset="city" environmentIntensity={0.2} />
+
+          <OrbitControls 
+            makeDefault
+            target={[0, 0, 0]}
+            enableZoom={false} 
+            enablePan={false} 
+            enableRotate={controlsEnabled}
+            minDistance={5} 
+            maxDistance={80} 
+            minPolarAngle={0} 
+            maxPolarAngle={Math.PI} 
+          />
           
           <CameraAnimator setControlsEnabled={setControlsEnabled} />
           
