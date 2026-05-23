@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useStore, SiteSettings } from '../lib/store';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, LogOut, Monitor, LayoutDashboard, User } from 'lucide-react';
@@ -13,7 +13,7 @@ import { OrbitControls, Html } from '@react-three/drei';
 import DeskScene from './DeskScene';
 import * as THREE from 'three';
 
-const Size = ReactQuill.Quill.import('attributors/style/size');
+const Size = ReactQuill.Quill.import('attributors/style/size') as any;
 Size.whitelist = ['10px', '14px', '16px', '18px', '24px', '32px', '48px', '64px', '80px', '100px'];
 ReactQuill.Quill.register(Size, true);
 
@@ -22,8 +22,9 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [localSettings, setLocalSettings] = useState<SiteSettings>(settings);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'3d' | 'home' | 'about' | 'footer'>('3d');
+  const [activeTab, setActiveTab] = useState<'3d' | 'home' | 'about' | 'footer' | 'reviews' | 'pricing'>('3d');
   const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   // Sync settings when they are loaded from Firestore
   useEffect(() => {
@@ -114,6 +115,18 @@ export default function AdminDashboard() {
               className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === 'footer' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
             >
               <LayoutDashboard className="w-4 h-4" /> Footer Menu
+            </button>
+            <button 
+              onClick={() => setActiveTab('reviews')}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === 'reviews' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
+            >
+              <LayoutDashboard className="w-4 h-4" /> Reviews
+            </button>
+            <button 
+              onClick={() => setActiveTab('pricing')}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === 'pricing' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
+            >
+              <LayoutDashboard className="w-4 h-4" /> Pricing
             </button>
           </nav>
         </div>
@@ -391,7 +404,7 @@ export default function AdminDashboard() {
                       <button 
                         onClick={() => {
                           const newProjects = [...(localSettings.projects || [])];
-                          newProjects.push({ id: Date.now().toString(), category: 'NEW', title: 'New Project', duration: '00:00', image: '' });
+                          newProjects.push({ id: Date.now().toString(), category: expandedCategory || 'NEW', title: 'New Project', duration: '00:00', image: '', videoUrl: '' });
                           setLocalSettings(prev => ({ ...prev, projects: newProjects }));
                         }}
                         className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary px-3 py-1.5 rounded text-sm transition-colors"
@@ -400,86 +413,154 @@ export default function AdminDashboard() {
                       </button>
                     </div>
 
-                    <div className="space-y-4">
-                      {localSettings.projects?.map((proj, index) => (
-                        <div key={proj.id || index} className="bg-black/50 p-4 rounded-xl border border-white/5 relative group">
-                          <button 
-                            onClick={() => {
-                              const newProjects = [...(localSettings.projects || [])];
-                              newProjects.splice(index, 1);
-                              setLocalSettings(prev => ({ ...prev, projects: newProjects }));
-                            }}
-                            className="absolute top-4 right-4 text-red-500 opacity-50 hover:opacity-100"
-                          >
-                            Remove
-                          </button>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                            <div>
-                              <label className="block text-xs font-medium text-white/30 mb-1">Title</label>
-                              <input 
-                                type="text" value={proj.title} 
-                                onChange={(e) => {
-                                  const p = [...localSettings.projects];
-                                  p[index].title = e.target.value;
-                                  setLocalSettings(prev => ({ ...prev, projects: p }));
-                                }}
-                                className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-medium text-white/30 mb-1">Category</label>
-                              <input 
-                                type="text" value={proj.category} 
-                                onChange={(e) => {
-                                  const p = [...localSettings.projects];
-                                  p[index].category = e.target.value;
-                                  setLocalSettings(prev => ({ ...prev, projects: p }));
-                                }}
-                                className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-medium text-white/30 mb-1">Image URL</label>
-                              <input 
-                                type="text" value={proj.image} 
-                                onChange={(e) => {
-                                  const p = [...localSettings.projects];
-                                  p[index].image = e.target.value;
-                                  setLocalSettings(prev => ({ ...prev, projects: p }));
-                                }}
-                                className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
-                              />
-                            </div>
-                            <div className="flex gap-4">
-                              <div className="flex-1">
-                                <label className="block text-xs font-medium text-white/30 mb-1">Duration</label>
-                                <input 
-                                  type="text" value={proj.duration} 
-                                  onChange={(e) => {
-                                    const p = [...localSettings.projects];
-                                    p[index].duration = e.target.value;
-                                    setLocalSettings(prev => ({ ...prev, projects: p }));
-                                  }}
-                                  className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
-                                />
-                              </div>
-                              <div className="flex items-center mt-6 gap-2">
-                                <input 
-                                  type="checkbox" checked={proj.featured || false} 
-                                  onChange={(e) => {
-                                    const p = [...localSettings.projects];
-                                    p[index].featured = e.target.checked;
-                                    setLocalSettings(prev => ({ ...prev, projects: p }));
-                                  }}
-                                  className="accent-brand-primary"
-                                />
-                                <span className="text-xs text-white/50">Featured (Glow)</span>
-                              </div>
-                            </div>
-                          </div>
+                    <div className="space-y-8">
+                      {expandedCategory === null ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                          {Array.from(new Set(localSettings.projects?.map(p => p.category) || [])).map(category => {
+                            const count = localSettings.projects?.filter(p => p.category === category).length;
+                            return (
+                              <button 
+                                key={category as string}
+                                onClick={() => setExpandedCategory(category as string)}
+                                className="relative group text-left transition-transform hover:-translate-y-2 h-48 w-full"
+                              >
+                                {/* Back tab */}
+                                <div className="absolute top-0 left-4 w-1/2 h-8 bg-[#C6A67A] rounded-t-[10px] shadow-inner" />
+                                
+                                {/* Main Body */}
+                                <div className="absolute top-4 left-0 w-full h-[calc(100%-1rem)] bg-[#E8D1A7] rounded-xl rounded-tl-none shadow-lg border-2 border-[#B58C56]/50 p-4 flex flex-col justify-center items-center overflow-hidden">
+                                  
+                                  {/* Paper label */}
+                                  <div className="bg-[#Fdfaf5] py-2.5 px-6 shadow-[1px_1px_3px_rgba(0,0,0,0.1)] transform -rotate-1 border border-black/5 z-10 w-4/5 text-center flex items-center justify-center -translate-y-2">
+                                    <span className="font-mono text-xs tracking-[0.2em] text-[#462F24] font-bold truncate uppercase">
+                                      {category as string}
+                                    </span>
+                                  </div>
+
+                                  {/* Left spine detail */}
+                                  <div className="absolute left-2.5 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-60 z-0">
+                                    {[...Array(8)].map((_, i) => (
+                                      <div key={i} className="w-5 h-2.5 rounded-full border-[2.5px] border-[#8B5D33]/60 mix-blend-multiply" />
+                                    ))}
+                                  </div>
+                                  
+                                  <div className="absolute bottom-3 right-4 text-[10px] font-bold tracking-wider text-[#8B5D33] opacity-50 uppercase">
+                                    {count} {count === 1 ? 'Item' : 'Items'}
+                                  </div>
+                                </div>
+                              </button>
+                            );
+                          })}
                         </div>
-                      ))}
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4 mb-6">
+                            <button 
+                              onClick={() => setExpandedCategory(null)}
+                              className="text-white/50 hover:text-white transition-colors flex items-center gap-2 text-sm bg-white/5 px-3 py-1.5 rounded-full"
+                            >
+                              <ArrowLeft className="w-4 h-4" /> Back to Folders
+                            </button>
+                            <h4 className="text-xl font-bold text-brand-primary">{expandedCategory}</h4>
+                          </div>
+                          
+                          {localSettings.projects?.map((proj, index) => {
+                            if (proj.category !== expandedCategory) return null;
+                            return (
+                              <div key={proj.id || index} className="bg-black/50 p-4 rounded-xl border border-white/5 relative group ml-4">
+                                <button 
+                                  onClick={() => {
+                                    const newProjects = [...(localSettings.projects || [])];
+                                    newProjects.splice(index, 1);
+                                    setLocalSettings(prev => ({ ...prev, projects: newProjects }));
+                                  }}
+                                  className="absolute top-4 right-4 text-red-500 opacity-50 hover:opacity-100 text-sm"
+                                >
+                                  Remove
+                                </button>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                  <div>
+                                    <label className="block text-xs font-medium text-white/30 mb-1">Title</label>
+                                    <input 
+                                      type="text" value={proj.title} 
+                                      onChange={(e) => {
+                                        const p = [...localSettings.projects];
+                                        p[index].title = e.target.value;
+                                        setLocalSettings(prev => ({ ...prev, projects: p }));
+                                      }}
+                                      className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-white/30 mb-1">Category</label>
+                                    <input 
+                                      type="text" value={proj.category} 
+                                      onChange={(e) => {
+                                        const p = [...localSettings.projects];
+                                        p[index].category = e.target.value.toUpperCase();
+                                        setLocalSettings(prev => ({ ...prev, projects: p }));
+                                      }}
+                                      className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none uppercase"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-white/30 mb-1">Thumbnail URL</label>
+                                    <input 
+                                      type="text" value={proj.image} 
+                                      onChange={(e) => {
+                                        const p = [...localSettings.projects];
+                                        p[index].image = e.target.value;
+                                        setLocalSettings(prev => ({ ...prev, projects: p }));
+                                      }}
+                                      className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-white/30 mb-1">Video Drive Link</label>
+                                    <input 
+                                      type="text" value={proj.videoUrl || ''} 
+                                      onChange={(e) => {
+                                        const p = [...localSettings.projects];
+                                        p[index].videoUrl = e.target.value;
+                                        setLocalSettings(prev => ({ ...prev, projects: p }));
+                                      }}
+                                      className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                                      placeholder="https://drive.google.com/file/d/.../view"
+                                    />
+                                  </div>
+                                  <div className="flex gap-4">
+                                    <div className="flex-1">
+                                      <label className="block text-xs font-medium text-white/30 mb-1">Duration</label>
+                                      <input 
+                                        type="text" value={proj.duration} 
+                                        onChange={(e) => {
+                                          const p = [...localSettings.projects];
+                                          p[index].duration = e.target.value;
+                                          setLocalSettings(prev => ({ ...prev, projects: p }));
+                                        }}
+                                        className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                                      />
+                                    </div>
+                                    <div className="flex items-center mt-6 gap-2">
+                                      <input 
+                                        type="checkbox" checked={proj.featured || false} 
+                                        onChange={(e) => {
+                                          const p = [...localSettings.projects];
+                                          p[index].featured = e.target.checked;
+                                          setLocalSettings(prev => ({ ...prev, projects: p }));
+                                        }}
+                                        className="accent-brand-primary border-white/10"
+                                      />
+                                      <span className="text-xs text-white/50">Featured (Glow)</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                       {(!localSettings.projects || localSettings.projects.length === 0) && (
                         <p className="text-white/30 text-sm text-center py-4">No projects yet.</p>
                       )}
@@ -642,6 +723,190 @@ export default function AdminDashboard() {
                       <input type="text" name="footerLink4Url" value={localSettings.footerLink4Url || ''} onChange={handleChange} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
                     </div>
                   </div>
+                </div>
+              </section>
+            </div>
+          )}
+
+          {activeTab === 'reviews' && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <section className="bg-white/5 p-6 md:p-8 rounded-2xl border border-white/10">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-brand-primary">Client Reviews</h2>
+                  <button 
+                    onClick={() => {
+                      const newReviews = [...(localSettings.reviews || [])];
+                      newReviews.push({ name: 'New Client', role: 'Role', content: 'Great work!', rating: 5 });
+                      setLocalSettings(prev => ({ ...prev, reviews: newReviews }));
+                    }}
+                    className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary px-3 py-1.5 rounded text-sm transition-colors"
+                  >
+                    + Add Review
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {localSettings.reviews?.map((review, index) => (
+                    <div key={index} className="bg-black/50 p-4 rounded-xl border border-white/5 relative group">
+                      <button 
+                        onClick={() => {
+                          const newReviews = [...(localSettings.reviews || [])];
+                          newReviews.splice(index, 1);
+                          setLocalSettings(prev => ({ ...prev, reviews: newReviews }));
+                        }}
+                        className="absolute top-4 right-4 text-red-500 opacity-50 hover:opacity-100 text-sm"
+                      >
+                        Remove
+                      </button>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <div>
+                          <label className="block text-xs font-medium text-white/30 mb-1">Name</label>
+                          <input 
+                            type="text" value={review.name} 
+                            onChange={(e) => {
+                              const r = [...(localSettings.reviews || [])];
+                              r[index].name = e.target.value;
+                              setLocalSettings(prev => ({ ...prev, reviews: r }));
+                            }}
+                            className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-white/30 mb-1">Role</label>
+                          <input 
+                            type="text" value={review.role} 
+                            onChange={(e) => {
+                              const r = [...(localSettings.reviews || [])];
+                              r[index].role = e.target.value;
+                              setLocalSettings(prev => ({ ...prev, reviews: r }));
+                            }}
+                            className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-xs font-medium text-white/30 mb-1">Content</label>
+                          <textarea 
+                            value={review.content} 
+                            onChange={(e) => {
+                              const r = [...(localSettings.reviews || [])];
+                              r[index].content = e.target.value;
+                              setLocalSettings(prev => ({ ...prev, reviews: r }));
+                            }}
+                            className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none min-h-[80px]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-white/30 mb-1">Rating (1-5)</label>
+                          <input 
+                            type="number" value={review.rating} min="1" max="5" 
+                            onChange={(e) => {
+                              const r = [...(localSettings.reviews || [])];
+                              r[index].rating = Number(e.target.value);
+                              setLocalSettings(prev => ({ ...prev, reviews: r }));
+                            }}
+                            className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+          )}
+
+          {activeTab === 'pricing' && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <section className="bg-white/5 p-6 md:p-8 rounded-2xl border border-white/10">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-brand-primary">Pricing Plans</h2>
+                  <button 
+                    onClick={() => {
+                      const newPlans = [...(localSettings.pricingPlans || [])];
+                      newPlans.push({ name: 'New Plan', description: 'Description', price: '$0', features: ['Feature 1'], popular: false });
+                      setLocalSettings(prev => ({ ...prev, pricingPlans: newPlans }));
+                    }}
+                    className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary px-3 py-1.5 rounded text-sm transition-colors"
+                  >
+                    + Add Plan
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {localSettings.pricingPlans?.map((plan, index) => (
+                    <div key={index} className="bg-black/50 p-4 rounded-xl border border-white/5 relative group">
+                      <button 
+                        onClick={() => {
+                          const newPlans = [...(localSettings.pricingPlans || [])];
+                          newPlans.splice(index, 1);
+                          setLocalSettings(prev => ({ ...prev, pricingPlans: newPlans }));
+                        }}
+                        className="absolute top-4 right-4 text-red-500 opacity-50 hover:opacity-100 text-sm"
+                      >
+                        Remove
+                      </button>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <div>
+                          <label className="block text-xs font-medium text-white/30 mb-1">Plan Name</label>
+                          <input 
+                            type="text" value={plan.name} 
+                            onChange={(e) => {
+                              const p = [...(localSettings.pricingPlans || [])];
+                              p[index].name = e.target.value;
+                              setLocalSettings(prev => ({ ...prev, pricingPlans: p }));
+                            }}
+                            className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-white/30 mb-1">Price</label>
+                          <input 
+                            type="text" value={plan.price} 
+                            onChange={(e) => {
+                              const p = [...(localSettings.pricingPlans || [])];
+                              p[index].price = e.target.value;
+                              setLocalSettings(prev => ({ ...prev, pricingPlans: p }));
+                            }}
+                            className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-xs font-medium text-white/30 mb-1">Description</label>
+                          <input 
+                            type="text" value={plan.description} 
+                            onChange={(e) => {
+                              const p = [...(localSettings.pricingPlans || [])];
+                              p[index].description = e.target.value;
+                              setLocalSettings(prev => ({ ...prev, pricingPlans: p }));
+                            }}
+                            className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-xs font-medium text-white/30 mb-1">Features (comma separated)</label>
+                          <textarea 
+                            value={plan.features.join(', ')} 
+                            onChange={(e) => {
+                              const p = [...(localSettings.pricingPlans || [])];
+                              p[index].features = e.target.value.split(',').map(f => f.trim());
+                              setLocalSettings(prev => ({ ...prev, pricingPlans: p }));
+                            }}
+                            className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none min-h-[60px]"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input 
+                            type="checkbox" checked={plan.popular} id={`popular-${index}`}
+                            onChange={(e) => {
+                              const p = [...(localSettings.pricingPlans || [])];
+                              p[index].popular = e.target.checked;
+                              setLocalSettings(prev => ({ ...prev, pricingPlans: p }));
+                            }}
+                            className="w-4 h-4 bg-[#111] border-white/10 rounded"
+                          />
+                          <label htmlFor={`popular-${index}`} className="text-sm font-medium text-white/70">Most Popular Plan</label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </section>
             </div>

@@ -2,8 +2,11 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Hero from './components/Hero';
 import Projects from './components/Projects';
 import About from './components/About';
+import Reviews from './components/Reviews';
+import Pricing from './components/Pricing';
 import { useStore } from './lib/store';
 import AdminDashboard from './components/AdminDashboard';
+import CategoryPage from './components/CategoryPage';
 import { LogIn } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -16,31 +19,8 @@ function Home() {
         <Hero />
         <Projects />
         <About />
-
-        {/* Client Logos */}
-        <section className="py-20 relative z-10 border-t border-white/5 mx-6 lg:mx-auto max-w-7xl mt-12 overflow-hidden">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 0.3, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.8 }}
-            className="flex flex-wrap justify-center gap-12 md:gap-20 grayscale items-center pointer-events-none"
-          >
-            <motion.span whileHover={{ scale: 1.1, opacity: 1 }} className="font-display font-bold text-2xl tracking-widest transition-all">SONY</motion.span>
-            <motion.span whileHover={{ scale: 1.1, opacity: 1 }} className="font-serif italic font-bold text-2xl transition-all">Canon</motion.span>
-            <motion.div whileHover={{ scale: 1.1, opacity: 1 }} className="flex items-center gap-2 font-display font-bold text-xl transition-all">
-              Red Bull
-              <span className="w-12 h-6 bg-white/10 rounded-full inline-block"></span>
-            </motion.div>
-            <motion.span whileHover={{ scale: 1.1, opacity: 1 }} className="font-sans font-black text-2xl tracking-widest transition-all">NETFLIX</motion.span>
-            <motion.div whileHover={{ scale: 1.1, opacity: 1 }} className="w-12 h-8 flex items-end overflow-hidden transition-all">
-               {/* Adidas logo mock */}
-               <div className="w-3 h-8 bg-white -skew-x-[30deg]"></div>
-               <div className="w-3 h-6 bg-white ml-1 -skew-x-[30deg]"></div>
-               <div className="w-3 h-4 bg-white ml-1 -skew-x-[30deg]"></div>
-            </motion.div>
-          </motion.div>
-        </section>
+        <Reviews />
+        <Pricing />
       </main>
 
       {/* Simple Footer/Contact Section */}
@@ -85,6 +65,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/category/:name" element={<CategoryPage />} />
       </Routes>
     </BrowserRouter>
   );

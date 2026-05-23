@@ -178,6 +178,14 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
   const { settings: globalSettings } = useStore();
   const settings = overrideSettings || globalSettings;
   const [controlsEnabled, setControlsEnabled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.matchMedia('(max-width: 768px)').matches || window.matchMedia('(pointer: coarse)').matches);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <section 
@@ -208,8 +216,8 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
         </button>
       )}
 
-      <div className="absolute inset-0 z-0 w-full h-full cursor-grab active:cursor-grabbing">
-        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={[1, 2]}>
+      <div className={`absolute inset-0 z-0 w-full h-full cursor-grab active:cursor-grabbing ${isMobile ? 'pointer-events-none' : ''}`}>
+        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={[1, 2]} style={{ touchAction: isMobile ? 'auto' : 'none' }}>
           <color attach="background" args={['#050505']} />
           <fog attach="fog" args={['#050505', 40, 250]} />
           
@@ -222,7 +230,7 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
             target={[0, 0, 0]}
             enableZoom={false} 
             enablePan={false} 
-            enableRotate={controlsEnabled}
+            enableRotate={controlsEnabled && !isMobile}
             minDistance={2} 
             maxDistance={150} 
           />

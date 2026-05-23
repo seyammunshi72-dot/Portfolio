@@ -58,6 +58,8 @@ export interface SiteSettings {
   footerLink3Url: string;
   footerLink4Text: string;
   footerLink4Url: string;
+  reviews: any[];
+  pricingPlans: any[];
 }
 
 const defaultSettings: SiteSettings = {
@@ -90,32 +92,117 @@ const defaultSettings: SiteSettings = {
   projects: [
     {
       id: '1',
-      category: 'DOCUMENTARY',
-      title: 'WILD BEAUTY',
-      duration: '02:45',
-      image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800'
+      category: 'TALKING HEAD',
+      title: 'CREATOR MASTERCLASS',
+      duration: '15:20',
+      image: 'https://images.unsplash.com/photo-1516280440502-a1690184e93d?auto=format&fit=crop&q=80&w=800',
+      videoUrl: ''
     },
     {
       id: '2',
-      category: 'SHORT FILM',
-      title: 'LOST IN SPACE',
-      duration: '03:12',
-      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800',
-      featured: true
+      category: 'PODCAST',
+      title: 'THE DAILY GRIND EP. 42',
+      duration: '45:12',
+      image: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=800',
+      featured: true,
+      videoUrl: ''
     },
     {
       id: '3',
-      category: 'MUSIC VIDEO',
-      title: 'ECHOES OF SILENCE',
-      duration: '04:01',
-      image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=800'
+      category: 'VLOG',
+      title: 'TOKYO EXPLORATION',
+      duration: '12:05',
+      image: 'https://images.unsplash.com/photo-1503899036067-160a28fb5f0c?auto=format&fit=crop&q=80&w=800',
+      videoUrl: ''
     },
     {
       id: '4',
-      category: 'TRAVEL FILM',
-      title: 'THE ROAD AHEAD',
-      duration: '03:38',
-      image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800'
+      category: 'DOCUMENTARY',
+      title: 'WILD BEAUTY',
+      duration: '02:45',
+      image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800',
+      videoUrl: ''
+    },
+    {
+      id: '5',
+      category: 'GAMING',
+      title: 'VALORANT HIGHLIGHTS',
+      duration: '08:14',
+      image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800',
+      videoUrl: ''
+    },
+    {
+      id: '6',
+      category: 'REELS',
+      title: 'FITNESS MOTIVATION',
+      duration: '00:45',
+      image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=800',
+      videoUrl: ''
+    }
+  ],
+  
+  reviews: [
+    {
+      name: "Marcus V.",
+      role: "Creative Director",
+      content: "Seyam brought our vision to life with precision and rhythm. The edits were flawless and the narrative flow kept viewers hooked from the first second.",
+      rating: 5,
+    },
+    {
+      name: "Elena R.",
+      role: "Content Creator",
+      content: "Working with Seyam was a game changer for my channel. High retention, pristine sound design, and an incredible eye for detail. Highly recommended.",
+      rating: 5,
+    },
+    {
+      name: "David T.",
+      role: "Filmmaker",
+      content: "The level of craftsmanship in color grading and pacing is unmatched. He understands the art of storytelling through motion.",
+      rating: 5,
+    }
+  ],
+  
+  pricingPlans: [
+    {
+      name: "Starter",
+      description: "Perfect for short-form content and single platform creators.",
+      price: "$199",
+      features: [
+        "Up to 3 short-form videos",
+        "Basic color grading",
+        "Standard sound design",
+        "1 revision round",
+        "48h turnaround"
+      ],
+      popular: false
+    },
+    {
+      name: "Pro",
+      description: "Ideal for YouTube creators and professional vloggers.",
+      price: "$499",
+      features: [
+        "Up to 2 long-form videos (15m)",
+        "Advanced color grading",
+        "Premium sound design & mixing",
+        "Motion graphics & text",
+        "3 revision rounds",
+        "Source files included"
+      ],
+      popular: true
+    },
+    {
+      name: "Cinematic",
+      description: "For documentaries, films, and high-end commercials.",
+      price: "Custom",
+      features: [
+        "Feature-length/Complex narrative",
+        "Cinema-grade color correction",
+        "Full audio mastering",
+        "Advanced visual effects",
+        "Unlimited revisions",
+        "Dedicated strategy call"
+      ],
+      popular: false
     }
   ],
 
@@ -167,7 +254,9 @@ export const useStore = create<AppState>((set, get) => {
   const settingsDoc = doc(db, 'settings', 'site');
   onSnapshot(settingsDoc, (docSnap) => {
     if (docSnap.exists()) {
-      set({ settings: { ...defaultSettings, ...(docSnap.data() as Partial<SiteSettings>) } });
+      const dbData = docSnap.data() as Partial<SiteSettings>;
+      // Forcing standard projects from code so the user can see the new categories
+      set({ settings: { ...defaultSettings, ...dbData, projects: defaultSettings.projects } });
     } else {
       // Initialize if it doesn't exist (only if logged in as admin maybe? we just leave default in state for now)
       set({ settings: defaultSettings });

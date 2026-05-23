@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import React from 'react';
 import { useStore } from '../lib/store';
 import { Star, Briefcase, Users, Globe } from 'lucide-react';
 
