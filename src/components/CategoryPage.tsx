@@ -20,11 +20,38 @@ export default function CategoryPage() {
   // Because 'name' is URL param (like 'talking-head'), categoryName will perfectly match project category if case is upper.
   const categoryVideos = projects.filter(p => !categoryName || p.category.toUpperCase() === categoryName);
 
+  const getThumbnailUrl = (url: string) => {
+    if (!url) return 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&q=80&w=800';
+    if (url.includes('drive.google.com/file/d/')) {
+      const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://lh3.googleusercontent.com/d/${match[1]}=w1000?authuser=0`;
+      }
+    }
+    if (url.includes('drive.google.com/open?id=')) {
+      const match = url.match(/id=([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://lh3.googleusercontent.com/d/${match[1]}=w1000?authuser=0`;
+      }
+    }
+    return url;
+  };
+
   const getEmbedUrl = (url: string) => {
     if (!url) return '';
     // Handle Google Drive links
     if (url.includes('drive.google.com/file/d/')) {
+      const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://drive.google.com/file/d/${match[1]}/preview`;
+      }
       return url.replace(/\/view.*$/, '/preview');
+    }
+    if (url.includes('drive.google.com/open?id=')) {
+      const match = url.match(/id=([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://drive.google.com/file/d/${match[1]}/preview`;
+      }
     }
     // Handle YouTube links
     if (url.includes('youtube.com/watch?v=')) {
@@ -100,7 +127,7 @@ export default function CategoryPage() {
                   <div className="absolute inset-0 pointer-events-none z-20 bg-[linear-gradient(rgba(255,255,255,0),rgba(255,255,255,0)_50%,rgba(0,0,0,0.1)_50%,rgba(0,0,0,0.1))] bg-[length:100%_4px]"></div>
                   
                   <img 
-                    src={video.image || 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&q=80&w=800'} 
+                    src={getThumbnailUrl(video.image)} 
                     alt={video.title}
                     className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-105"
                   />
@@ -110,11 +137,6 @@ export default function CategoryPage() {
                     <div className="w-16 h-16 rounded-full bg-[#E25C3D]/90 flex items-center justify-center shadow-lg transform scale-90 opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 backdrop-blur-sm">
                       <PlayCircle className="w-8 h-8 text-[#F2ECE1] ml-1" />
                     </div>
-                  </div>
-                  
-                  {/* Duration Tag */}
-                  <div className="absolute bottom-3 right-3 bg-[#1F1F1E]/80 text-[#F2ECE1] font-mono text-xs px-2 py-1 rounded shadow-sm z-30 backdrop-blur-md">
-                    {video.duration || '00:00'}
                   </div>
                 </div>
                 
@@ -129,9 +151,6 @@ export default function CategoryPage() {
                         Featured
                       </span>
                     )}
-                    <span className="font-serif italic text-sm text-[#462F24] opacity-70">
-                      Dir. by Seyam
-                    </span>
                   </div>
                 </div>
               </motion.div>

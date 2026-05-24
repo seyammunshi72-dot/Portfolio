@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useStore, SiteSettings } from '../lib/store';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, LogOut, Monitor, LayoutDashboard, User } from 'lucide-react';
+import { ArrowLeft, Save, LogOut, Monitor, LayoutDashboard, User, Edit2, PanelBottom, Star, DollarSign } from 'lucide-react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import ReactQuill from 'react-quill-new';
@@ -16,6 +16,92 @@ import * as THREE from 'three';
 const Size = ReactQuill.Quill.import('attributors/style/size') as any;
 Size.whitelist = ['10px', '14px', '16px', '18px', '24px', '32px', '48px', '64px', '80px', '100px'];
 ReactQuill.Quill.register(Size, true);
+
+function FolderCard({
+  category,
+  count,
+  onExpand,
+  onUpdateCategory
+}: {
+  category: string;
+  count: number;
+  onExpand: () => void;
+  onUpdateCategory: (oldCat: string, newCat: string) => void;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [val, setVal] = useState(category);
+
+  useEffect(() => { setVal(category); }, [category]);
+
+  const commitUpdate = () => {
+    setIsEditing(false);
+    if (val.trim() && val.trim() !== category) {
+      onUpdateCategory(category, val.trim().toUpperCase());
+    } else {
+      setVal(category);
+    }
+  };
+
+  return (
+    <button 
+      onClick={(e) => { 
+        if (!isEditing) onExpand(); 
+      }}
+      className="relative group text-left transition-transform hover:-translate-y-2 h-48 w-full"
+    >
+      {/* Back tab */}
+      <div className="absolute top-0 left-4 w-1/2 h-8 bg-[#C6A67A] rounded-t-[10px] shadow-inner" />
+      
+      {/* Main Body */}
+      <div className="absolute top-4 left-0 w-full h-[calc(100%-1rem)] bg-[#E8D1A7] rounded-xl rounded-tl-none shadow-lg border-2 border-[#B58C56]/50 p-4 flex flex-col justify-center items-center overflow-hidden">
+        
+        {/* Paper label */}
+        <div 
+          className="bg-[#Fdfaf5] py-2.5 px-6 shadow-[1px_1px_3px_rgba(0,0,0,0.1)] transform -rotate-1 border border-black/5 z-10 w-4/5 text-center flex items-center justify-center -translate-y-2"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsEditing(true);
+          }}
+        >
+          {isEditing ? (
+            <input
+              type="text"
+              autoFocus
+              value={val}
+              onChange={(e) => setVal(e.target.value)}
+              onBlur={commitUpdate}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') commitUpdate();
+                if (e.key === 'Escape') {
+                  setVal(category);
+                  setIsEditing(false);
+                }
+              }}
+              className="font-mono text-xs tracking-[0.2em] text-[#462F24] font-bold uppercase w-full bg-transparent outline-none text-center border-b border-brand-primary placeholder-[#462F24]/50"
+              placeholder="FOLDER NAME"
+            />
+          ) : (
+            <>
+              <span className="font-mono text-xs tracking-[0.2em] text-[#462F24] font-bold uppercase truncate">{category}</span>
+              <Edit2 className="w-3 h-3 text-[#462F24]/30 ml-2 flex-shrink-0" />
+            </>
+          )}
+        </div>
+
+        {/* Left spine detail */}
+        <div className="absolute left-2.5 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-60 z-0">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="w-5 h-2.5 rounded-full border-[2.5px] border-[#8B5D33]/60 mix-blend-multiply" />
+          ))}
+        </div>
+        
+        <div className="absolute bottom-3 right-4 text-[10px] font-bold tracking-wider text-[#8B5D33] opacity-50 uppercase">
+          {count} {count === 1 ? 'Item' : 'Items'}
+        </div>
+      </div>
+    </button>
+  );
+}
 
 export default function AdminDashboard() {
   const { user, settings, updateSettings, logout, applyPreview } = useStore();
@@ -114,19 +200,19 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('footer')}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === 'footer' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
             >
-              <LayoutDashboard className="w-4 h-4" /> Footer Menu
+              <PanelBottom className="w-4 h-4" /> Footer Menu
             </button>
             <button 
               onClick={() => setActiveTab('reviews')}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === 'reviews' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
             >
-              <LayoutDashboard className="w-4 h-4" /> Reviews
+              <Star className="w-4 h-4" /> Reviews
             </button>
             <button 
               onClick={() => setActiveTab('pricing')}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === 'pricing' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
             >
-              <LayoutDashboard className="w-4 h-4" /> Pricing
+              <DollarSign className="w-4 h-4" /> Pricing
             </button>
           </nav>
         </div>
@@ -387,24 +473,12 @@ export default function AdminDashboard() {
                 <h2 className="text-2xl font-bold mb-6 text-brand-primary">Projects Page Content</h2>
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-white/50 mb-2">Projects / Hero Section Subtitle</label>
-                    <input 
-                      type="text"
-                      name="heroText"
-                      value={localSettings.heroText}
-                      onChange={handleChange}
-                      className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-primary outline-none"
-                    />
-                    <p className="mt-2 text-xs text-white/40">This is the text that floats centrally in the 3D scene background on the main page.</p>
-                  </div>
-
-                  <div className="border-t border-white/10 pt-6 mt-6">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-lg font-medium text-white">Project List</h3>
                       <button 
                         onClick={() => {
                           const newProjects = [...(localSettings.projects || [])];
-                          newProjects.push({ id: Date.now().toString(), category: expandedCategory || 'NEW', title: 'New Project', duration: '00:00', image: '', videoUrl: '' });
+                          newProjects.push({ id: Date.now().toString(), category: expandedCategory || 'NEW', title: 'New Project', image: '', videoUrl: '' });
                           setLocalSettings(prev => ({ ...prev, projects: newProjects }));
                         }}
                         className="bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary px-3 py-1.5 rounded text-sm transition-colors"
@@ -419,36 +493,21 @@ export default function AdminDashboard() {
                           {Array.from(new Set(localSettings.projects?.map(p => p.category) || [])).map(category => {
                             const count = localSettings.projects?.filter(p => p.category === category).length;
                             return (
-                              <button 
+                              <FolderCard 
                                 key={category as string}
-                                onClick={() => setExpandedCategory(category as string)}
-                                className="relative group text-left transition-transform hover:-translate-y-2 h-48 w-full"
-                              >
-                                {/* Back tab */}
-                                <div className="absolute top-0 left-4 w-1/2 h-8 bg-[#C6A67A] rounded-t-[10px] shadow-inner" />
-                                
-                                {/* Main Body */}
-                                <div className="absolute top-4 left-0 w-full h-[calc(100%-1rem)] bg-[#E8D1A7] rounded-xl rounded-tl-none shadow-lg border-2 border-[#B58C56]/50 p-4 flex flex-col justify-center items-center overflow-hidden">
-                                  
-                                  {/* Paper label */}
-                                  <div className="bg-[#Fdfaf5] py-2.5 px-6 shadow-[1px_1px_3px_rgba(0,0,0,0.1)] transform -rotate-1 border border-black/5 z-10 w-4/5 text-center flex items-center justify-center -translate-y-2">
-                                    <span className="font-mono text-xs tracking-[0.2em] text-[#462F24] font-bold truncate uppercase">
-                                      {category as string}
-                                    </span>
-                                  </div>
-
-                                  {/* Left spine detail */}
-                                  <div className="absolute left-2.5 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-60 z-0">
-                                    {[...Array(8)].map((_, i) => (
-                                      <div key={i} className="w-5 h-2.5 rounded-full border-[2.5px] border-[#8B5D33]/60 mix-blend-multiply" />
-                                    ))}
-                                  </div>
-                                  
-                                  <div className="absolute bottom-3 right-4 text-[10px] font-bold tracking-wider text-[#8B5D33] opacity-50 uppercase">
-                                    {count} {count === 1 ? 'Item' : 'Items'}
-                                  </div>
-                                </div>
-                              </button>
+                                category={category as string}
+                                count={count || 0}
+                                onExpand={() => setExpandedCategory(category as string)}
+                                onUpdateCategory={(oldCat, newCat) => {
+                                  const p = [...(localSettings.projects || [])].map(proj => {
+                                    if (proj.category === oldCat) {
+                                      return { ...proj, category: newCat };
+                                    }
+                                    return proj;
+                                  });
+                                  setLocalSettings(prev => ({ ...prev, projects: p }));
+                                }}
+                              />
                             );
                           })}
                         </div>
@@ -461,7 +520,25 @@ export default function AdminDashboard() {
                             >
                               <ArrowLeft className="w-4 h-4" /> Back to Folders
                             </button>
-                            <h4 className="text-xl font-bold text-brand-primary">{expandedCategory}</h4>
+                            <div className="flex items-center gap-2 flex-1 group/title">
+                              <input 
+                                value={expandedCategory}
+                                onChange={(e) => {
+                                  const newCategory = e.target.value.toUpperCase();
+                                  const p = [...(localSettings.projects || [])].map(proj => {
+                                    if (proj.category === expandedCategory) {
+                                      return { ...proj, category: newCategory };
+                                    }
+                                    return proj;
+                                  });
+                                  setLocalSettings(prev => ({ ...prev, projects: p }));
+                                  setExpandedCategory(newCategory);
+                                }}
+                                className="text-xl font-bold text-brand-primary bg-transparent border-b border-transparent hover:border-white/20 focus:border-brand-primary outline-none transition-colors w-auto min-w-[200px]"
+                                placeholder="Folder Name"
+                              />
+                              <Edit2 className="w-4 h-4 text-white/30 opacity-0 group-hover/title:opacity-100 transition-opacity" />
+                            </div>
                           </div>
                           
                           {localSettings.projects?.map((proj, index) => {
@@ -530,18 +607,6 @@ export default function AdminDashboard() {
                                     />
                                   </div>
                                   <div className="flex gap-4">
-                                    <div className="flex-1">
-                                      <label className="block text-xs font-medium text-white/30 mb-1">Duration</label>
-                                      <input 
-                                        type="text" value={proj.duration} 
-                                        onChange={(e) => {
-                                          const p = [...localSettings.projects];
-                                          p[index].duration = e.target.value;
-                                          setLocalSettings(prev => ({ ...prev, projects: p }));
-                                        }}
-                                        className="w-full bg-[#111] border border-white/10 rounded-lg p-2 text-white text-sm outline-none"
-                                      />
-                                    </div>
                                     <div className="flex items-center mt-6 gap-2">
                                       <input 
                                         type="checkbox" checked={proj.featured || false} 

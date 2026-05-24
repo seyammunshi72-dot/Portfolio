@@ -34,7 +34,6 @@ function ComputerModel({ overrideSettings }: { overrideSettings?: SiteSettings }
     <group ref={ref} position={[settings.cameraPositionX, settings.cameraPositionY, settings.cameraPositionZ]} rotation={[0, -0.1, 0]}>
       <primitive object={scene} scale={0.045} />
       
-      {/* We use createPortal to inject our 3D UI directly into the 3D screen's coordinate space! */}
       {screenMesh && createPortal(
         <Html
           transform
@@ -63,8 +62,6 @@ export default function DeskScene({ overrideSettings }: { overrideSettings?: Sit
       {/* Lighting setup to mimic the dark cinematic environment */}
       <spotLight position={[0, 20, 10]} color="#ffffff" intensity={2000} angle={0.8} penumbra={0.5} distance={100} />
       
-      <Environment preset="city" />
-
       <Suspense fallback={null}>
          <ComputerModel overrideSettings={overrideSettings} />
       </Suspense>

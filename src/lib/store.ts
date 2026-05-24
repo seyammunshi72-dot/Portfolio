@@ -94,7 +94,6 @@ const defaultSettings: SiteSettings = {
       id: '1',
       category: 'TALKING HEAD',
       title: 'CREATOR MASTERCLASS',
-      duration: '15:20',
       image: 'https://images.unsplash.com/photo-1516280440502-a1690184e93d?auto=format&fit=crop&q=80&w=800',
       videoUrl: ''
     },
@@ -102,7 +101,6 @@ const defaultSettings: SiteSettings = {
       id: '2',
       category: 'PODCAST',
       title: 'THE DAILY GRIND EP. 42',
-      duration: '45:12',
       image: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=800',
       featured: true,
       videoUrl: ''
@@ -111,7 +109,6 @@ const defaultSettings: SiteSettings = {
       id: '3',
       category: 'VLOG',
       title: 'TOKYO EXPLORATION',
-      duration: '12:05',
       image: 'https://images.unsplash.com/photo-1503899036067-160a28fb5f0c?auto=format&fit=crop&q=80&w=800',
       videoUrl: ''
     },
@@ -119,7 +116,6 @@ const defaultSettings: SiteSettings = {
       id: '4',
       category: 'DOCUMENTARY',
       title: 'WILD BEAUTY',
-      duration: '02:45',
       image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800',
       videoUrl: ''
     },
@@ -127,7 +123,6 @@ const defaultSettings: SiteSettings = {
       id: '5',
       category: 'GAMING',
       title: 'VALORANT HIGHLIGHTS',
-      duration: '08:14',
       image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800',
       videoUrl: ''
     },
@@ -135,7 +130,6 @@ const defaultSettings: SiteSettings = {
       id: '6',
       category: 'REELS',
       title: 'FITNESS MOTIVATION',
-      duration: '00:45',
       image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=800',
       videoUrl: ''
     }
@@ -255,8 +249,7 @@ export const useStore = create<AppState>((set, get) => {
   onSnapshot(settingsDoc, (docSnap) => {
     if (docSnap.exists()) {
       const dbData = docSnap.data() as Partial<SiteSettings>;
-      // Forcing standard projects from code so the user can see the new categories
-      set({ settings: { ...defaultSettings, ...dbData, projects: defaultSettings.projects } });
+      set({ settings: { ...defaultSettings, ...dbData } });
     } else {
       // Initialize if it doesn't exist (only if logged in as admin maybe? we just leave default in state for now)
       set({ settings: defaultSettings });

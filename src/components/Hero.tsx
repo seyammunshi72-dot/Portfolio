@@ -219,11 +219,11 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
       <div 
         className="absolute inset-0 z-0 w-full h-full cursor-grab active:cursor-grabbing pointer-events-none md:pointer-events-auto"
       >
-        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={[1, 1.5]} style={{ touchAction: 'auto' }} performance={{ min: 0.5 }}>
+        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={isMobile ? 1 : [1, 1.5]} style={{ touchAction: 'auto' }} performance={{ min: 0.5 }}>
           <color attach="background" args={['#050505']} />
           <fog attach="fog" args={['#050505', 40, 250]} />
           
-          <Stars radius={150} depth={50} count={3000} factor={6} saturation={1} fade speed={0.5} />
+          <Stars radius={150} depth={50} count={isMobile ? 500 : 3000} factor={isMobile ? 4 : 6} saturation={1} fade speed={isMobile ? 0.1 : 0.5} />
           <ambientLight intensity={0.5} />
           <Environment preset="city" environmentIntensity={0.2} />
 
@@ -242,7 +242,7 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
           <CameraAnimator setControlsEnabled={setControlsEnabled} />
           
           <Suspense fallback={null}>
-            <SolarSystemBg />
+            {!isMobile && <SolarSystemBg />}
           </Suspense>
 
           <ErrorBoundary fallbackRender={({error}) => <Html center position={[0, 0, 0]}><div style={{color: 'white', background: 'rgba(255, 0, 0, 0.8)', padding: '10px', borderRadius: '4px', whiteSpace: 'nowrap'}}>3D model failed to load: {error?.message || 'Unknown error'}</div></Html>}>
