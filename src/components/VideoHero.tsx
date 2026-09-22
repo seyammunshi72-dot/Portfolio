@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SiteSettings, useStore } from '../lib/store';
-import { ArrowDown, Upload, Film, Link as LinkIcon } from 'lucide-react';
+import { ArrowDown, Upload, Film, Sparkles, Image as ImageIcon } from 'lucide-react';
 import { saveVideoBlob, loadVideoBlob, clearVideoBlob } from '../lib/videoStorage';
+import { extractImgbbUrl, isImgbbUrl, isDirectGifOrImage } from '../lib/imgbbUtils';
 
 interface VideoHeroProps {
   settings: SiteSettings;
@@ -16,7 +17,7 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
   const [isLoading, setIsLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 1. Load persistent video from IndexedDB or default fallback on mount
+  // 1. Load persistent video/gif from IndexedDB or default fallback on mount
   useEffect(() => {
     let active = true;
     async function initVideo() {
@@ -27,7 +28,7 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
           setLocalBlobUrl(objectUrl);
         }
       } catch (err) {
-        console.warn('Error loading video from storage:', err);
+        console.warn('Error loading media from storage:', err);
       }
     }
     initVideo();
@@ -36,11 +37,22 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
     };
   }, []);
 
-  const rawUrl = localBlobUrl || settings.heroVideoUrl?.trim() || '';
+  const rawUrl = localBlobUrl || settings.heroGifUrl?.trim() || settings.heroVideoUrl?.trim() || '/hero-animation.gif';
+
+  const [imgSrc, setImgSrc] = useState<string>(rawUrl);
+
+  useEffect(() => {
+    setImgSrc(rawUrl);
+  }, [rawUrl]);
 
   // 2. Handle Google Drive Embeds
   const isGoogleDrive = rawUrl.includes('drive.google.com');
-  const isImageOrGif = /\.(gif|webp|png|jpe?g)($|\?)/i.test(rawUrl) || rawUrl.startsWith('data:image/');
+  const isImageOrGif = 
+    settings.heroMediaType === 'gif' ||
+    isImgbbUrl(rawUrl) ||
+    isDirectGifOrImage(rawUrl) ||
+    /\.(gif|webp|png|jpe?g)($|\?)/i.test(rawUrl) || 
+    rawUrl.startsWith('data:image/');
   
   let driveEmbedUrl = '';
   if (isGoogleDrive) {
@@ -52,7 +64,7 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
     }
   }
 
-  // 3. Autoplay policy enforcement: ensure video plays automatically as a GIF loop
+  // 3. Autoplay policy enforcement: ensure video plays automatically as a loop if it's a video file
   useEffect(() => {
     if (videoRef.current && rawUrl && !isGoogleDrive && !isImageOrGif) {
       videoRef.current.currentTime = 0;
@@ -78,13 +90,13 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
         const reader = new FileReader();
         reader.onload = (e) => {
           const dataUrl = e.target?.result as string;
-          applyPreview({ heroVideoUrl: dataUrl });
-          updateSettings({ heroVideoUrl: dataUrl }).catch(() => {});
+          applyPreview({ heroVideoUrl: dataUrl, heroGifUrl: dataUrl });
+          updateSettings({ heroVideoUrl: dataUrl, heroGifUrl: dataUrl }).catch(() => {});
         };
         reader.readAsDataURL(file);
       }
     } catch (err) {
-      console.error('Failed to save video:', err);
+      console.error('Failed to save file:', err);
     } finally {
       setIsLoading(false);
     }
@@ -105,14 +117,42 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
   const handleUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!urlInput.trim()) return;
+    const clean = extractImgbbUrl(urlInput);
     setLocalBlobUrl(null);
     clearVideoBlob();
-    applyPreview({ heroVideoUrl: urlInput.trim() });
-    updateSettings({ heroVideoUrl: urlInput.trim() }).catch(() => {});
+    const isGif = isImgbbUrl(clean) || isDirectGifOrImage(clean);
+    applyPreview({ 
+      heroVideoUrl: clean, 
+      heroGifUrl: clean, 
+      heroMediaType: isGif ? 'gif' : 'video' 
+    });
+    updateSettings({ 
+      heroVideoUrl: clean, 
+      heroGifUrl: clean, 
+      heroMediaType: isGif ? 'gif' : 'video' 
+    }).catch(() => {});
     setUrlInput('');
   };
 
-  const videoFitClass = "w-full h-auto block select-none mx-auto";
+  // Media Display Fit Mode
+  // 'cover' / 'fill-width' (default) -> 100% full width edge-to-edge with natural aspect ratio (NO cropping of head or text)
+  // 'framed' | 'contain' -> centered inside black frame
+  // 'fill-viewport' -> cropped to strictly fill viewport height with object-top
+  const fitMode = settings.heroVideoFit || 'cover';
+  const isContain = fitMode === 'contain' || fitMode === 'framed';
+  const isFillViewport = fitMode === 'fill-viewport';
+
+  const sectionHeightClass = isContain
+    ? "h-[calc(100svh-3.5rem)] sm:h-[calc(100svh-4rem)]"
+    : isFillViewport
+    ? "min-h-[calc(100svh-3.5rem)] sm:min-h-[calc(100svh-4rem)] h-[calc(100svh-3.5rem)] sm:h-[calc(100svh-4rem)]"
+    : "h-auto w-full";
+
+  const mediaFitClass = isContain
+    ? "max-h-[calc(100svh-3.5rem)] sm:max-h-[calc(100svh-4rem)] w-auto max-w-full block select-none mx-auto object-contain"
+    : isFillViewport
+    ? "w-full h-full min-h-[calc(100svh-3.5rem)] sm:min-h-[calc(100svh-4rem)] object-cover object-top block select-none"
+    : "w-full h-auto block select-none mx-auto object-cover";
 
   return (
     <section 
@@ -120,9 +160,9 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
       onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
-      className={`relative w-full bg-black overflow-hidden font-sans select-none flex items-center justify-center ${
+      className={`relative w-full bg-[#050505] overflow-hidden font-sans select-none flex items-center justify-center ${
         rawUrl 
-          ? 'h-auto' 
+          ? sectionHeightClass 
           : 'h-[100svh] min-h-[600px] flex flex-col justify-center items-center'
       }`}
     >
@@ -137,9 +177,9 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
         </button>
       )}
 
-      {/* Main Home Screen Display - 100% Edge-to-Edge Full Width on Mobile, Tablet & Desktop */}
+      {/* Main Home Screen Display - 100% Edge-to-Edge Full Width */}
       {rawUrl ? (
-        <div className="relative w-full h-auto flex items-center justify-center overflow-hidden">
+        <div className={`relative w-full ${isFillViewport || isContain ? 'h-full' : 'h-auto'} flex items-center justify-center overflow-hidden`}>
           {isGoogleDrive ? (
             <div className="w-full aspect-video bg-black flex items-center justify-center">
               <iframe 
@@ -151,12 +191,20 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
             </div>
           ) : isImageOrGif ? (
             <img 
-              src={rawUrl} 
-              alt="Seyam Munshi Video Home Screen" 
-              className={videoFitClass}
+              src={imgSrc} 
+              alt="Seyam Munshi Animation" 
+              className={mediaFitClass}
+              loading="eager"
+              referrerPolicy="no-referrer"
+              onError={() => {
+                if (imgSrc !== '/hero-animation.gif') {
+                  console.warn('Hero GIF failed to load from remote host, falling back to local /hero-animation.gif');
+                  setImgSrc('/hero-animation.gif');
+                }
+              }}
             />
           ) : (
-            <div className="relative w-full h-auto flex items-center justify-center">
+            <div className={`relative w-full ${isFillViewport || isContain ? 'h-full' : 'h-auto'} flex items-center justify-center`}>
               <video 
                 ref={videoRef}
                 src={rawUrl}
@@ -164,34 +212,34 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
                 loop
                 muted
                 playsInline
-                className={videoFitClass}
+                className={mediaFitClass}
               />
             </div>
           )}
         </div>
       ) : (
-        /* Initial Setup Stage: When no video has been uploaded yet */
+        /* Initial Setup Stage: When no GIF/video has been configured yet */
         <div className="relative z-20 flex flex-col items-center justify-center max-w-xl w-full px-6 text-center">
           <div className={`w-full p-8 md:p-12 rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center bg-white/[0.02] backdrop-blur-xl ${
             isDragging ? 'border-brand-primary bg-brand-primary/5 scale-102' : 'border-white/15 hover:border-white/30'
           }`}>
             <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-brand-primary shadow-[0_0_30px_rgba(255,85,51,0.2)]">
-              <Film className="w-8 h-8" />
+              <Sparkles className="w-8 h-8" />
             </div>
 
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-2">
-              Set Your Home Screen Video
+              Set Your Home Screen (ImgBB GIF or Media)
             </h2>
             <p className="text-sm text-white/50 mb-8 max-w-sm">
-              Upload your animated reel or video. It will instantly become the main full-screen hero, playing continuously in a smooth GIF loop.
+              Add your animated ImgBB GIF or video reel. It will display full-width at the top of your portfolio, looping smoothly.
             </p>
 
             <label className="flex items-center gap-3 px-6 py-3.5 bg-brand-primary hover:bg-brand-primary/90 text-black font-black text-sm rounded-full cursor-pointer transition-all shadow-[0_0_30px_rgba(255,85,51,0.4)] hover:scale-105 active:scale-95">
               <Upload className="w-4 h-4" />
-              <span>Select Video File (MP4, GIF, WebM)</span>
+              <span>Select File (GIF, MP4, WebM)</span>
               <input 
                 type="file" 
-                accept="video/mp4,video/webm,video/quicktime,image/gif"
+                accept="image/gif,image/webp,video/mp4,video/webm,video/quicktime"
                 onChange={handleFileInput}
                 className="hidden" 
               />
@@ -199,7 +247,7 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
 
             <div className="mt-6 flex items-center gap-4 text-xs text-white/30 w-full justify-center">
               <div className="h-[1px] bg-white/10 flex-1" />
-              <span>OR PASTE LINK</span>
+              <span>OR PASTE IMGBB GIF LINK</span>
               <div className="h-[1px] bg-white/10 flex-1" />
             </div>
 
@@ -208,12 +256,12 @@ export default function VideoHero({ settings, onExitPreview }: VideoHeroProps) {
                 type="text"
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
-                placeholder="Google Drive link or direct video URL"
-                className="flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-brand-primary"
+                placeholder="https://i.ibb.co/.../animation.gif or Google Drive link"
+                className="flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-brand-primary font-mono"
               />
               <button 
                 type="submit"
-                className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl border border-white/10 transition-colors"
+                className="px-5 py-2.5 bg-brand-primary hover:bg-brand-primary/90 text-black font-bold text-xs rounded-xl transition-colors"
               >
                 Apply
               </button>

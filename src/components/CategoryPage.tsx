@@ -128,7 +128,11 @@ export default function CategoryPage() {
                 className="group cursor-pointer"
                 onClick={() => {
                   if (video.videoUrl) {
-                    setActiveVideo(getEmbedUrl(video.videoUrl));
+                    if (video.videoUrl.includes('/drive/folders/')) {
+                      window.open(video.videoUrl, '_blank', 'noopener,noreferrer');
+                    } else {
+                      setActiveVideo(getEmbedUrl(video.videoUrl));
+                    }
                   }
                 }}
               >
@@ -141,9 +145,16 @@ export default function CategoryPage() {
                     <img 
                       src={getThumbnailUrl(video.image)} 
                       alt={video.title}
+                      referrerPolicy="no-referrer"
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-105"
+                      onError={(e) => {
+                        // Gracefully hide broken image so placeholder is shown
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
                     />
-                  ) : (
+                  ) : null}
+                  
+                  {(!video.image) && (
                     <div className="w-full h-full bg-gradient-to-br from-[#242424] to-[#121212] flex flex-col items-center justify-center p-4 text-center">
                       <PlayCircle className="w-12 h-12 text-[#E25C3D] mb-2 opacity-80 group-hover:scale-110 transition-transform" />
                       <span className="text-white/80 font-display text-sm font-bold tracking-wide line-clamp-1">{video.title}</span>

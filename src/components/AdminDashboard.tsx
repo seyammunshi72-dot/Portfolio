@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useStore, SiteSettings } from '../lib/store';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, LogOut, Monitor, LayoutDashboard, User, Edit2, PanelBottom, Star, Film, ExternalLink, Phone } from 'lucide-react';
+import { ArrowLeft, Save, LogOut, Monitor, LayoutDashboard, User, Edit2, PanelBottom, Star, Film, ExternalLink, Phone, Image as ImageIcon, Sparkles } from 'lucide-react';
 import Hero from './Hero';
 import AdminHeroSettings from './AdminHeroSettings';
 import { saveVideoBlob } from '../lib/videoStorage';
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('hero')}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === 'hero' ? 'bg-brand-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
             >
-              <Film className="w-4 h-4" /> Hero Video
+              <ImageIcon className="w-4 h-4" /> Home GIF & Hero
             </button>
             <button 
               onClick={() => setActiveTab('projects')}

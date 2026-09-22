@@ -69,9 +69,11 @@ export interface SiteSettings {
   contactEmail?: string;
   // -- Hero Video / GIF Mode --
   heroType?: 'video' | '3d';
+  heroMediaType?: 'gif' | 'video';
   heroVideoUrl?: string;
+  heroGifUrl?: string;
   heroPosterImage?: string;
-  heroVideoFit?: 'cover' | 'contain';
+  heroVideoFit?: 'cover' | 'contain' | 'fill-width' | 'framed' | 'fill-viewport';
   heroOverlayOpacity?: number;
 }
 
@@ -102,7 +104,9 @@ const defaultSettings: SiteSettings = {
   cameraPositionZ: -4,
   heroText: 'Frontend Developer & 3D Web Enthusiast',
   heroType: 'video',
-  heroVideoUrl: '',
+  heroMediaType: 'gif',
+  heroVideoUrl: '/hero-animation.gif',
+  heroGifUrl: '/hero-animation.gif',
   heroPosterImage: '',
   heroVideoFit: 'cover',
   heroOverlayOpacity: 10,
@@ -210,9 +214,10 @@ export const useStore = create<AppState>((set, get) => {
   onSnapshot(settingsDoc, (docSnap) => {
     if (docSnap.exists()) {
       const dbData = docSnap.data() as Partial<SiteSettings>;
-      set({ settings: { ...defaultSettings, ...dbData } });
+      // If heroVideoFit was saved as legacy 'contain' previously in Firestore, default to 'cover' so it fills the screen on desktop
+      const heroVideoFit = (dbData.heroVideoFit === 'contain' ? 'cover' : dbData.heroVideoFit) || 'cover';
+      set({ settings: { ...defaultSettings, ...dbData, heroVideoFit } });
     } else {
-      // Initialize if it doesn't exist (only if logged in as admin maybe? we just leave default in state for now)
       set({ settings: defaultSettings });
     }
   });

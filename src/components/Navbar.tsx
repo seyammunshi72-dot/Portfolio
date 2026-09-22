@@ -54,6 +54,11 @@ export default function Navbar() {
     e.preventDefault();
     setActiveSection(id);
 
+    if (window.location.pathname !== '/') {
+      window.location.href = `/${href}`;
+      return;
+    }
+
     if (id === 'home' || href === '#home') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       window.history.pushState(null, '', window.location.pathname);
@@ -71,6 +76,8 @@ export default function Navbar() {
         behavior: 'smooth'
       });
       window.history.pushState(null, '', href);
+    } else {
+      window.location.href = `/${href}`;
     }
   };
 

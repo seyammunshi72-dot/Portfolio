@@ -125,7 +125,7 @@ export default function About() {
             </div>
             {/* The giant custom pointer cursor */}
             <div className="absolute bottom-10 right-8 z-20 pointer-events-none" style={{ transform: 'rotate(-15deg)' }}>
-                <img src="https://api.iconify.design/pixelarticons:pointer.svg?color=%23000000" className="w-16 h-16 drop-shadow-[2px_2px_0px_white]" />
+                <PixelCursor />
             </div>
           </RetroWindow>
         </motion.div>

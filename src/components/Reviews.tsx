@@ -34,7 +34,7 @@ export default function Reviews() {
               className="bg-[#141414]/90 backdrop-blur-xl border border-white/10 rounded-[1.25rem] p-8 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:bg-[#1a1a1a]/90 transition-colors flex flex-col"
             >
               <div className="flex items-center gap-1 mb-6">
-                {[...Array(review.rating)].map((_, i) => (
+                {[...Array(Math.max(1, Math.min(5, Math.floor(review.rating || 5))))].map((_, i) => (
                   <Star key={i} className="w-4 h-4 fill-[#ff4444] text-[#ff4444]" />
                 ))}
               </div>
