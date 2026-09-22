@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Projects from './components/Projects';
@@ -11,7 +11,7 @@ import AdminDashboard from './components/AdminDashboard';
 import CategoryPage from './components/CategoryPage';
 import WhatsAppButton from './components/WhatsAppButton';
 import { LogIn } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { getWhatsAppChatUrl, formatSocialUrl } from './lib/socialUtils';
 
 function Home() {
@@ -23,7 +23,13 @@ function Home() {
       const timer = setTimeout(() => {
         const el = document.querySelector(hash);
         if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
+          const headerOffset = 64;
+          const elementPosition = el.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
         }
       }, 150);
       return () => clearTimeout(timer);
@@ -153,13 +159,30 @@ function Home() {
   );
 }
 
+function Main() {
+  const location = useLocation();
+  const isCategory = location.pathname.startsWith('/category/');
+
+  return (
+    <>
+      <Home />
+      <AnimatePresence>
+        {isCategory && (
+          <Routes location={location}>
+            <Route path="/category/:name" element={<CategoryPage />} />
+          </Routes>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/category/:name" element={<CategoryPage />} />
+        <Route path="/*" element={<Main />} />
       </Routes>
     </BrowserRouter>
   );

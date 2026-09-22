@@ -5,7 +5,7 @@ import { ArrowLeft, Save, LogOut, Monitor, LayoutDashboard, User, Edit2, PanelBo
 import Hero from './Hero';
 import AdminHeroSettings from './AdminHeroSettings';
 import { saveVideoBlob } from '../lib/videoStorage';
-import { getWhatsAppChatUrl, formatSocialUrl } from '../lib/socialUtils';
+import { getWhatsAppChatUrl, formatSocialUrl, extractInstagramUsername } from '../lib/socialUtils';
 
 function FolderCard({
   category,
@@ -721,11 +721,11 @@ export default function AdminDashboard() {
                             footerLink1Url: e.target.value
                           }));
                         }} 
-                        placeholder="instagram.com/seyammunshi or @seyammunshi" 
+                        placeholder="@sey.am1 or https://instagram.com/sey.am1" 
                         className="w-full bg-black/60 border border-white/15 rounded-lg p-2.5 text-white text-sm font-mono focus:border-brand-primary outline-none" 
                       />
                       <span className="text-[11px] text-white/40 block">
-                        Will be formatted to https://instagram.com/...
+                        Username: @{extractInstagramUsername(localSettings.instagramUrl || localSettings.footerLink1Url || 'sey.am1')}
                       </span>
                     </div>
 

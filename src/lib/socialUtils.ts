@@ -18,9 +18,26 @@ export function getWhatsAppChatUrl(phone?: string, customMessage?: string): stri
   return `https://wa.me/${clean}?text=${msg}`;
 }
 
+export function extractInstagramUsername(input?: string): string {
+  if (!input) return 'sey.am1';
+  const clean = input
+    .trim()
+    .replace(/^[#@\s]+/, '')
+    .replace(/^https?:\/\/(www\.)?instagram\.com\//i, '')
+    .replace(/[?#].*$/, '')
+    .replace(/\/+$/, '')
+    .trim();
+  return clean.replace(/^@/, '') || 'sey.am1';
+}
+
 export function formatSocialUrl(platform: 'instagram' | 'facebook' | 'youtube' | 'generic', input?: string): string {
   if (!input || !input.trim() || input.trim() === '#') return '';
-  let val = input.trim();
+  let val = input.trim().replace(/^[#\s]+/, '');
+
+  if (platform === 'instagram') {
+    const user = extractInstagramUsername(val);
+    return `https://instagram.com/${user}`;
+  }
 
   // If already starts with protocol or mailto/tel
   if (/^https?:\/\//i.test(val) || /^mailto:/i.test(val) || /^tel:/i.test(val)) {
@@ -29,11 +46,6 @@ export function formatSocialUrl(platform: 'instagram' | 'facebook' | 'youtube' |
 
   // Strip leading '@' symbol if user entered @username
   val = val.replace(/^@/, '');
-
-  if (platform === 'instagram') {
-    val = val.replace(/^(https?:\/\/)?(www\.)?instagram\.com\//i, '');
-    return `https://instagram.com/${val}`;
-  }
 
   if (platform === 'facebook') {
     val = val.replace(/^(https?:\/\/)?(www\.)?facebook\.com\//i, '');

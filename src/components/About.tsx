@@ -51,15 +51,21 @@ function RetroWindow({ title, children, className = '' }: { title: string, child
 
 function PixelCursor() {
   return (
-    <svg className="w-12 h-16 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.5)]" viewBox="0 0 21 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M7 0H9V2H11V4H13V6H15V8H17V10H19V12H21V16H19V18H17V20H15V22H11V24H7V26H5V28H3V26H1V24H-1V10H1V8H3V6H5V4H7V0Z" fill="white"/>
-      <path d="M8 2H10V4H12V6H14V8H16V10H18V12H20V15H18V17H16V19H14V21H10V23H6V25H4V27H2V25H0V11H2V9H4V7H6V5H8V2Z" fill="black"/>
-      <path d="M6 6H8V8H10V10H12V12H14V14H16V16H18V14H16V12H14V10H12V8H10V6H8V6Z" fill="white"/>
-      <path d="M4 14H6V16H8V18H10V20H12V22H14V20H12V18H10V16H8V14H6V14Z" fill="white"/>
-      {/* Hand pointer details */}
-      <path fillRule="evenodd" clipRule="evenodd" d="M12.9996 9H11.9996V10H10.9996V11H9.99963V12H8.99963V13H7.99963V14H6.99963V16H7.99963V17H8.99963V18H9.99963V19H10.9996V20H11.9996V21H12.9996V20H13.9996V19H14.9996V18H15.9996V17H16.9996V16H17.9996V15H18.9996V14" fill="#FFFFFF"/>
-      <path d="M9 1H8V2H7V3H6V4H5V5H4V6H3V7H2V8H1V24H2V25H3V26H4V27H5V25H6V23H8V21H12V19H14V17H16V15H18V13H15V14H13V15H11V16H9V17H7V18H6V16H7V15H8V14H9V13H10V12H11V11H12V10H13V9H14V8H12V7H10V6H8V5H10V4H9V3H8V2H9V1Z" fill="white"/>
-      <path d="M8 2V3H7V4H6V5H5V6H4V7H3V8H2V24H3V25H4V26H5V24H6V22H8V20H12V18H14V16H16V14H18V12H15V13H13V14H11V15H9V16H7V17H6V15H7V14H8V13H9V12H10V11H11V10H12V9H14V7H12V6H10V5H8V4H10V3H9V2H8Z" fill="black"/>
+    <svg 
+      className="w-8 h-10 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.4)] select-none" 
+      viewBox="0 0 16 22" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+      shapeRendering="crispEdges"
+    >
+      {/* Classic Retro Windows Mouse Pointer Arrow */}
+      <polygon 
+        points="0,0 0,17 4.5,12.5 7.5,19 10,18 7,11.5 12.5,11.5" 
+        fill="#FFFFFF" 
+        stroke="#000000" 
+        strokeWidth="1.8" 
+        strokeLinejoin="miter" 
+      />
     </svg>
   );
 }
@@ -123,8 +129,8 @@ export default function About() {
               {/* Blinking typing cursor */}
               <div className="inline-block w-[10px] h-6 bg-black ml-1 animate-[blink_1s_infinite]"></div>
             </div>
-            {/* The giant custom pointer cursor */}
-            <div className="absolute bottom-10 right-8 z-20 pointer-events-none" style={{ transform: 'rotate(-15deg)' }}>
+            {/* The classic retro mouse pointer cursor */}
+            <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 z-20 pointer-events-none">
                 <PixelCursor />
             </div>
           </RetroWindow>

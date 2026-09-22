@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { ArrowLeft, PlayCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -9,8 +9,26 @@ export default function CategoryPage() {
   const { name } = useParams();
   const { settings } = useStore();
   const projects = settings.projects || [];
+  const navigate = useNavigate();
   
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
+  const handleBack = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/#work');
+    }
+  };
 
   // Format the name back from URL-friendly slug
   const categoryName = name ? name.toUpperCase().replace(/\-/g, ' ') : '';
@@ -65,7 +83,13 @@ export default function CategoryPage() {
   };
 
   return (
-    <div className="bg-[#F2ECE1] min-h-screen text-black font-sans selection:bg-brand-primary/30 antialiased overflow-x-hidden pt-24 pb-20 relative">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-50 bg-[#F2ECE1] text-black font-sans selection:bg-brand-primary/30 antialiased overflow-y-auto overflow-x-hidden pt-20 sm:pt-24 pb-20"
+    >
       {/* 70s Graphic Design Background Pattern (muted version) */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
         <svg className="absolute w-0 h-0">
@@ -79,9 +103,13 @@ export default function CategoryPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <Link to="/" className="inline-flex items-center gap-2 font-display text-sm uppercase tracking-widest text-[#462F24] hover:text-[#E25C3D] transition-colors mb-12">
-          <ArrowLeft className="w-4 h-4" /> Back to Home
-        </Link>
+        <button 
+          onClick={handleBack}
+          type="button"
+          className="inline-flex items-center gap-2 font-display text-sm uppercase tracking-widest text-[#462F24] hover:text-[#E25C3D] transition-colors mb-8 sm:mb-12 cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Work
+        </button>
         
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -195,7 +223,7 @@ export default function CategoryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-black/90 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 md:p-8 bg-black/90 backdrop-blur-sm"
           >
             <button 
               onClick={() => setActiveVideo(null)}
@@ -222,6 +250,6 @@ export default function CategoryPage() {
 
       {/* Floating Dedicated WhatsApp Button */}
       <WhatsAppButton />
-    </div>
+    </motion.div>
   );
 }

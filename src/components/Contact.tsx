@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Mail, MessageCircle, Briefcase, Globe, Send, CheckCircle2 } from 'lucide-react';
 import { useStore } from '../lib/store';
-import { getWhatsAppChatUrl } from '../lib/socialUtils';
+import { getWhatsAppChatUrl, formatSocialUrl, extractInstagramUsername } from '../lib/socialUtils';
 
 export default function Contact() {
   const { settings } = useStore();
@@ -15,6 +15,11 @@ export default function Contact() {
   const contactEmail = settings.contactEmail || 'seyammunshi72@gmail.com';
   const whatsappNumber = settings.whatsappNumber || '+8801786546949';
   const whatsappDisplay = whatsappNumber;
+
+  const instagramRaw = settings.instagramUrl || settings.footerLink1Url || 'sey.am1';
+  const instagramUsername = extractInstagramUsername(instagramRaw);
+  const instagramDisplay = `@${instagramUsername}`;
+  const instagramUrl = formatSocialUrl('instagram', instagramRaw) || `https://instagram.com/${instagramUsername}`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,6 +129,43 @@ export default function Contact() {
                     fill="white"
                     d="M17.52 14.33C17.22 14.18 15.75 13.45 15.47 13.35C15.2 13.25 15 13.2 14.81 13.5C14.61 13.8 14.05 14.47 13.88 14.66C13.71 14.86 13.53 14.88 13.24 14.73C12.94 14.58 11.99 14.27 10.87 13.27C9.99 12.49 9.4 11.52 9.23 11.23C9.06 10.93 9.21 10.77 9.36 10.63C9.49 10.5 9.66 10.28 9.8 10.11C9.95 9.94 10 9.82 10.1 9.62C10.2 9.42 10.15 9.25 10.08 9.1C10 8.95 9.43 7.55 9.2 6.98C8.97 6.43 8.74 6.51 8.57 6.5C8.41 6.49 8.22 6.49 8.03 6.49C7.84 6.49 7.52 6.56 7.26 6.84C6.99 7.13 6.25 7.82 6.25 9.22C6.25 10.62 7.27 11.97 7.42 12.16C7.56 12.36 9.45 15.27 12.35 16.52C13.04 16.82 13.58 17 14 17.13C14.69 17.35 15.31 17.32 15.81 17.25C16.36 17.17 17.51 16.55 17.75 15.87C17.99 15.19 17.99 14.61 17.92 14.49C17.85 14.36 17.67 14.29 17.52 14.33Z"
                   />
+                </svg>
+              </div>
+            </div>
+          </a>
+
+          {/* Instagram Card */}
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block bg-[#141414]/90 hover:bg-[#1a1a1a]/95 border border-white/10 rounded-2xl p-6 transition-all duration-300 shadow-[0_4px_25px_rgba(0,0,0,0.4)]"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-white text-lg sm:text-xl font-bold tracking-tight mb-1 group-hover:text-[#E1306C] transition-colors">
+                  Instagram
+                </h3>
+                <p className="text-white/60 text-sm sm:text-base font-normal font-mono">
+                  {instagramDisplay}
+                </p>
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform overflow-hidden">
+                {/* Official Instagram Color Gradient Icon */}
+                <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none">
+                  <defs>
+                    <radialGradient id="contactInstaGrad" cx="30%" cy="105%" r="130%" fx="30%" fy="105%">
+                      <stop offset="0%" stopColor="#fdf497" />
+                      <stop offset="5%" stopColor="#fdf497" />
+                      <stop offset="45%" stopColor="#fd5949" />
+                      <stop offset="60%" stopColor="#d6249f" />
+                      <stop offset="90%" stopColor="#285AEB" />
+                    </radialGradient>
+                  </defs>
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="url(#contactInstaGrad)" />
+                  <circle cx="12" cy="12" r="3.4" stroke="white" strokeWidth="1.6" fill="none" />
+                  <circle cx="16.5" cy="7.5" r="1.1" fill="white" />
+                  <rect x="5.5" y="5.5" width="13" height="13" rx="3.5" stroke="white" strokeWidth="1.5" fill="none" />
                 </svg>
               </div>
             </div>
