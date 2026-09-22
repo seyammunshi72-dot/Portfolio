@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, Environment, Html, useProgress } from '@react-three/drei';
 import * as THREE from 'three';
 import DeskScene from './DeskScene';
+import VideoHero from './VideoHero';
 import { useStore, SiteSettings } from '../lib/store';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -187,25 +188,16 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // If heroType is 'video' (or default), render VideoHero component
+  if (settings.heroType !== '3d') {
+    return <VideoHero settings={settings} onExitPreview={onExitPreview} />;
+  }
+
   return (
     <section 
       id="home"
       className="relative w-full h-[100svh] bg-[#050505] overflow-hidden text-white font-sans bg-noise flex flex-col justify-center items-center"
     >
-      {/* 4 Corner Navigation Details */}
-      <a href="#home" className="absolute top-8 left-8 lg:top-12 lg:left-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/50 hover:text-white cursor-pointer transition-colors duration-300">
-        HOME
-      </a>
-      <a href="#about" className="absolute top-8 right-8 lg:top-12 lg:right-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/50 hover:text-white transition-colors duration-300 cursor-pointer">
-        ABOUT
-      </a>
-      <a href="#contact" className="absolute bottom-8 left-8 lg:bottom-12 lg:left-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/30 hover:text-white transition-colors cursor-pointer">
-        CONTACT
-      </a>
-      <a href="#work" className="absolute bottom-8 right-8 lg:bottom-12 lg:right-12 z-20 text-[10px] tracking-[0.4em] uppercase font-bold text-white/50 hover:text-white transition-colors duration-300 cursor-pointer">
-        WORK
-      </a>
-
       {onExitPreview && (
         <button 
           onClick={onExitPreview}
@@ -217,9 +209,10 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
       )}
 
       <div 
+        style={{ touchAction: 'auto' }}
         className="absolute inset-0 z-0 w-full h-full cursor-grab active:cursor-grabbing pointer-events-none md:pointer-events-auto"
       >
-        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={isMobile ? 1 : [1, 1.5]} style={{ touchAction: 'auto' }} performance={{ min: 0.5 }}>
+        <Canvas camera={{ position: [0, 4, 30], fov: 40 }} dpr={isMobile ? 1 : [1, 1.5]} performance={{ min: 0.5 }}>
           <color attach="background" args={['#050505']} />
           <fog attach="fog" args={['#050505', 40, 250]} />
           
@@ -255,6 +248,9 @@ export default function Hero({ overrideSettings, onExitPreview }: { overrideSett
 
       {/* Vignette Overlay for realism */}
       <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(ellipse_at_center,_transparent_0%,_#030303_120%)]" />
+
+      {/* Smooth blend into Work section */}
+      <div className="absolute -bottom-1 left-0 right-0 h-24 sm:h-36 md:h-44 pointer-events-none z-20 bg-gradient-to-b from-transparent via-[#F2ECE1]/40 to-[#F2ECE1]" />
     </section>
   );
 }

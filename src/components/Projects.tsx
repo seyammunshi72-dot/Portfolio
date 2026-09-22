@@ -8,6 +8,8 @@ export default function Projects() {
   const projects = settings.projects || [];
 
   const folderLabels = ["TALKING HEAD", "PODCAST", "VLOG", "DOCUMENTARY", "GAMING", "REELS"];
+  const projectCategories = Array.from(new Set(projects.map(p => (p.category || '').toUpperCase().trim()).filter(Boolean)));
+  const displayedCategories = projectCategories.length > 0 ? projectCategories : folderLabels;
 
   const toTitleCase = (str: string) => {
     return str.replace(
@@ -17,7 +19,7 @@ export default function Projects() {
   };
 
   return (
-    <section id="work" className="min-h-screen py-12 md:py-16 relative z-10 bg-[#F2ECE1] overflow-hidden flex flex-col justify-center">
+    <section id="work" className="min-h-screen pt-8 pb-14 md:py-16 relative z-10 bg-[#F2ECE1] overflow-hidden flex flex-col justify-center">
       {/* 70s Graphic Design Background Pattern */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
         {/* Noise Texture */}
@@ -44,6 +46,9 @@ export default function Projects() {
             maskImage: 'linear-gradient(to left, black, transparent)'
           }}
         ></div>
+
+        {/* Bottom Smooth Blend: dissolves retro background seamlessly into dark Testimonials */}
+        <div className="absolute -bottom-1 left-0 right-0 h-32 sm:h-44 md:h-56 bg-gradient-to-b from-transparent via-[#050505]/75 to-[#050505] z-10 pointer-events-none" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 relative z-20 flex flex-col items-center">
@@ -53,15 +58,15 @@ export default function Projects() {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="relative inline-block mb-12 md:mb-16 text-center"
+          className="relative inline-block mb-8 md:mb-16 text-center"
         >
           {/* Retro offset shadows */}
-          <h2 className="relative text-5xl md:text-7xl lg:text-[80px] font-black tracking-tighter uppercase font-display text-[#1F1F1E]">
-            <span className="absolute -left-[5px] -top-[5px] text-[#E25C3D] z-[-1]">My art</span>
-            <span className="absolute -left-[2.5px] -top-[2.5px] text-[#D3AF36] z-[-1]">My art</span>
+          <h2 className="relative text-4xl sm:text-5xl md:text-7xl lg:text-[80px] font-black tracking-tighter uppercase font-display text-[#1F1F1E]">
+            <span className="absolute -left-[3px] -top-[3px] sm:-left-[5px] sm:-top-[5px] text-[#E25C3D] z-[-1]">My art</span>
+            <span className="absolute -left-[1.5px] -top-[1.5px] sm:-left-[2.5px] sm:-top-[2.5px] text-[#D3AF36] z-[-1]">My art</span>
             My art
           </h2>
-          <div className="w-24 h-2 bg-transparent mx-auto mt-6 rounded overflow-hidden flex shadow-sm">
+          <div className="w-24 h-2 bg-transparent mx-auto mt-4 md:mt-6 rounded overflow-hidden flex shadow-sm">
             <div className="w-1/3 h-full bg-[#E25C3D]"></div>
             <div className="w-1/3 h-full bg-[#D3AF36]"></div>
             <div className="w-1/3 h-full bg-[#3B7B61]"></div>
@@ -70,11 +75,9 @@ export default function Projects() {
 
         {/* Folders Grid */}
         <div className="flex flex-wrap justify-center gap-4 md:gap-x-8 md:gap-y-12 w-full lg:px-8 mx-auto max-w-[1240px]">
-          {Array.from(new Set(projects.map(p => (p.category || 'NEW').toUpperCase()))).map((categoryName: any, idx) => {
+          {displayedCategories.map((categoryName: string, idx: number) => {
             const categorySlug = encodeURIComponent(categoryName.toLowerCase().replace(/\s+/g, '-'));
-            // Find first project in this category to act as representative if needed
-            const categoryProjects = projects.filter(p => (p.category || 'NEW').toUpperCase() === categoryName);
-            const representProject = categoryProjects[0] || {};
+            const categoryProjects = projects.filter(p => (p.category || '').toUpperCase().trim() === categoryName);
             
             return (
               <Link to={`/category/${categorySlug}`} key={categorySlug}>
@@ -115,7 +118,7 @@ export default function Projects() {
                      {toTitleCase(categoryName)}
                    </h3>
                    <p className="text-[#A86E4B] font-sans text-[10px] font-bold tracking-widest mt-2 uppercase opacity-80 group-hover:opacity-100 transition-opacity whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
-                     {categoryProjects.length} {categoryProjects.length === 1 ? 'Video' : 'Videos'}
+                     {categoryProjects.length > 0 ? `${categoryProjects.length} ${categoryProjects.length === 1 ? 'Video' : 'Videos'}` : 'View Projects'}
                    </p>
                  </div>
               </div>

@@ -48,8 +48,12 @@ export interface SiteSettings {
   aboutStat3Text: string;
   aboutStat4Num: string;
   aboutStat4Text: string;
-  // -- Footer --
+  // -- Footer & Social Links --
   footerTitle: string;
+  instagramUrl?: string;
+  facebookUrl?: string;
+  youtubeUrl?: string;
+  behanceUrl?: string;
   footerLink1Text: string;
   footerLink1Url: string;
   footerLink2Text: string;
@@ -60,6 +64,15 @@ export interface SiteSettings {
   footerLink4Url: string;
   reviews: any[];
   pricingPlans: any[];
+  // -- Contact & Messaging --
+  whatsappNumber?: string;
+  contactEmail?: string;
+  // -- Hero Video / GIF Mode --
+  heroType?: 'video' | '3d';
+  heroVideoUrl?: string;
+  heroPosterImage?: string;
+  heroVideoFit?: 'cover' | 'contain';
+  heroOverlayOpacity?: number;
 }
 
 const defaultSettings: SiteSettings = {
@@ -88,73 +101,15 @@ const defaultSettings: SiteSettings = {
   cameraPositionY: 0.52,
   cameraPositionZ: -4,
   heroText: 'Frontend Developer & 3D Web Enthusiast',
+  heroType: 'video',
+  heroVideoUrl: '',
+  heroPosterImage: '',
+  heroVideoFit: 'cover',
+  heroOverlayOpacity: 10,
   
-  projects: [
-    {
-      id: '1',
-      category: 'TALKING HEAD',
-      title: 'CREATOR MASTERCLASS',
-      image: 'https://images.unsplash.com/photo-1516280440502-a1690184e93d?auto=format&fit=crop&q=80&w=800',
-      videoUrl: ''
-    },
-    {
-      id: '2',
-      category: 'PODCAST',
-      title: 'THE DAILY GRIND EP. 42',
-      image: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=800',
-      featured: true,
-      videoUrl: ''
-    },
-    {
-      id: '3',
-      category: 'VLOG',
-      title: 'TOKYO EXPLORATION',
-      image: 'https://images.unsplash.com/photo-1503899036067-160a28fb5f0c?auto=format&fit=crop&q=80&w=800',
-      videoUrl: ''
-    },
-    {
-      id: '4',
-      category: 'DOCUMENTARY',
-      title: 'WILD BEAUTY',
-      image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800',
-      videoUrl: ''
-    },
-    {
-      id: '5',
-      category: 'GAMING',
-      title: 'VALORANT HIGHLIGHTS',
-      image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800',
-      videoUrl: ''
-    },
-    {
-      id: '6',
-      category: 'REELS',
-      title: 'FITNESS MOTIVATION',
-      image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=800',
-      videoUrl: ''
-    }
-  ],
+  projects: [],
   
-  reviews: [
-    {
-      name: "Marcus V.",
-      role: "Creative Director",
-      content: "Seyam brought our vision to life with precision and rhythm. The edits were flawless and the narrative flow kept viewers hooked from the first second.",
-      rating: 5,
-    },
-    {
-      name: "Elena R.",
-      role: "Content Creator",
-      content: "Working with Seyam was a game changer for my channel. High retention, pristine sound design, and an incredible eye for detail. Highly recommended.",
-      rating: 5,
-    },
-    {
-      name: "David T.",
-      role: "Filmmaker",
-      content: "The level of craftsmanship in color grading and pacing is unmatched. He understands the art of storytelling through motion.",
-      rating: 5,
-    }
-  ],
+  reviews: [],
   
   pricingPlans: [
     {
@@ -204,28 +159,34 @@ const defaultSettings: SiteSettings = {
   aboutHeading1: 'STORYTELLER.',
   aboutHeading2: 'VISUAL ARTIST.',
   aboutHeading3: 'PROBLEM SOLVER.',
-  aboutText: "I'm a passionate video editor with 5+ years of experience crafting compelling visual stories for brands, creators and agencies. My focus is on rhythm, pacing, and emotional resonance.",
-  aboutPhotoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=800',
+  aboutText: "Hey, what's up? My name is Seyam and I've been working as a video editor for almost two years. My focus is always to deliver engaging videos with rhythm, narrative and retention.",
+  aboutPhotoUrl: '',
   aboutPhotoSize: 100,
   aboutCvUrl: '#',
-  aboutStat1Num: '5+',
+  aboutStat1Num: '2+',
   aboutStat1Text: 'Years Experience',
-  aboutStat2Num: '150+',
+  aboutStat2Num: '100+',
   aboutStat2Text: 'Projects Completed',
-  aboutStat3Num: '80+',
+  aboutStat3Num: '18+',
   aboutStat3Text: 'Happy Clients',
-  aboutStat4Num: '20+',
+  aboutStat4Num: '5+',
   aboutStat4Text: 'Countries Worked',
 
-  footerTitle: 'EDIT',
-  footerLink1Text: 'INSTAGRAM',
-  footerLink1Url: '#',
-  footerLink2Text: 'WHATSAPP',
-  footerLink2Url: '#',
+  footerTitle: 'SEYAM MUNSHI',
+  instagramUrl: '',
+  facebookUrl: '',
+  youtubeUrl: '',
+  behanceUrl: '',
+  footerLink1Text: '',
+  footerLink1Url: '',
+  footerLink2Text: '',
+  footerLink2Url: '',
   footerLink3Text: 'EMAIL',
-  footerLink3Url: '#',
-  footerLink4Text: 'FIVERR',
-  footerLink4Url: '#',
+  footerLink3Url: 'mailto:seyammunshi72@gmail.com',
+  footerLink4Text: '',
+  footerLink4Url: '',
+  whatsappNumber: '+8801786546949',
+  contactEmail: 'seyammunshi72@gmail.com',
 };
 
 interface AppState {

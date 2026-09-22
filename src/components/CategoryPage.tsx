@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { ArrowLeft, PlayCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import WhatsAppButton from './WhatsAppButton';
 
 export default function CategoryPage() {
   const { name } = useParams();
@@ -20,8 +21,8 @@ export default function CategoryPage() {
   // Because 'name' is URL param (like 'talking-head'), categoryName will perfectly match project category if case is upper.
   const categoryVideos = projects.filter(p => !categoryName || p.category.toUpperCase() === categoryName);
 
-  const getThumbnailUrl = (url: string) => {
-    if (!url) return 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&q=80&w=800';
+  const getThumbnailUrl = (url?: string) => {
+    if (!url) return '';
     if (url.includes('drive.google.com/file/d/')) {
       const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
       if (match && match[1]) {
@@ -101,8 +102,20 @@ export default function CategoryPage() {
         </motion.div>
 
         {categoryVideos.length === 0 ? (
-          <div className="py-20 text-center">
-             <p className="text-[#462F24] font-serif text-xl italic opacity-70">No videos found for this category.</p>
+          <div className="py-20 text-center bg-[#FEF4CE]/60 rounded-2xl border border-[#DECF96] p-8 max-w-xl mx-auto shadow-sm">
+             <div className="w-16 h-16 rounded-full bg-[#E25C3D]/10 text-[#E25C3D] flex items-center justify-center mx-auto mb-4">
+               <PlayCircle className="w-8 h-8" />
+             </div>
+             <h3 className="text-2xl font-bold font-display text-[#1F1F1E] mb-2">Projects in Production</h3>
+             <p className="text-[#462F24] font-serif text-lg italic opacity-80 mb-6">
+               New {categoryName ? categoryName.toLowerCase() : ''} edits are currently being polished. Check back soon or contact Seyam directly for portfolio samples.
+             </p>
+             <a 
+               href={`mailto:seyammunshi72@gmail.com?subject=Portfolio Inquiry - ${categoryName}`} 
+               className="inline-flex items-center gap-2 bg-[#E25C3D] text-[#F2ECE1] font-sans font-bold text-xs uppercase tracking-widest px-6 py-3 rounded-full hover:bg-[#c94b2f] transition-colors"
+             >
+               Request Samples
+             </a>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
@@ -116,21 +129,26 @@ export default function CategoryPage() {
                 onClick={() => {
                   if (video.videoUrl) {
                     setActiveVideo(getEmbedUrl(video.videoUrl));
-                  } else {
-                    alert("No video URL provided for this project. Add one in the Admin dashboard.");
                   }
                 }}
               >
                 {/* Video Thumbnail wrapped in a vintage TV/Frame style */}
-                <div className="relative aspect-video rounded-xl overflow-hidden shadow-xl mb-4 bg-black border-[3px] border-[#462F24] transform transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-2xl">
+                <div className="relative aspect-video rounded-xl overflow-hidden shadow-xl mb-4 bg-[#141414] border-[3px] border-[#462F24] transform transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-2xl">
                   {/* CRT/Vintage overlay effect over image */}
                   <div className="absolute inset-0 pointer-events-none z-20 bg-[linear-gradient(rgba(255,255,255,0),rgba(255,255,255,0)_50%,rgba(0,0,0,0.1)_50%,rgba(0,0,0,0.1))] bg-[length:100%_4px]"></div>
                   
-                  <img 
-                    src={getThumbnailUrl(video.image)} 
-                    alt={video.title}
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-105"
-                  />
+                  {video.image ? (
+                    <img 
+                      src={getThumbnailUrl(video.image)} 
+                      alt={video.title}
+                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#242424] to-[#121212] flex flex-col items-center justify-center p-4 text-center">
+                      <PlayCircle className="w-12 h-12 text-[#E25C3D] mb-2 opacity-80 group-hover:scale-110 transition-transform" />
+                      <span className="text-white/80 font-display text-sm font-bold tracking-wide line-clamp-1">{video.title}</span>
+                    </div>
+                  )}
                   
                   {/* Play Button Overlay */}
                   <div className="absolute inset-0 flex items-center justify-center z-30">
@@ -190,6 +208,9 @@ export default function CategoryPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Dedicated WhatsApp Button */}
+      <WhatsAppButton />
     </div>
   );
 }

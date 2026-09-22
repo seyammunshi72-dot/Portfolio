@@ -68,7 +68,7 @@ export default function About() {
   const { settings } = useStore();
 
   return (
-    <section id="about" className="py-24 relative w-full border-y-4 border-black" 
+    <section id="about" className="py-28 relative w-full overflow-hidden" 
       style={{ 
         backgroundImage: `
           repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.4) 2px, rgba(0,0,0,0.4) 4px),
@@ -80,35 +80,51 @@ export default function About() {
       
       <div className="absolute inset-x-0 top-0 h-full w-full pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.8)] z-0"></div>
 
-      <div className="max-w-[1000px] mx-auto px-4 relative z-10 flex flex-col md:flex-row gap-6 items-stretch justify-center">
+      {/* Top Smooth Blend from Testimonials */}
+      <div className="absolute top-0 left-0 right-0 h-24 sm:h-36 bg-gradient-to-b from-[#050505] via-[#050505]/70 to-transparent z-10 pointer-events-none" />
+
+      {/* Bottom Smooth Blend into Contact */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 sm:h-36 bg-gradient-to-b from-transparent via-[#050505]/70 to-[#050505] z-10 pointer-events-none" />
+
+      <div className="max-w-[1000px] mx-auto px-4 relative z-20 flex flex-col md:flex-row gap-10 md:gap-6 items-stretch justify-center">
         
         {/* Main Info Window */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="w-full md:w-[60%] flex flex-col"
+          className="w-full md:w-[60%] flex flex-col mb-4 md:mb-0"
         >
-          <RetroWindow title="Notepad.exe" className="h-[550px]">
+          <RetroWindow title="Notepad.exe" className="h-auto min-h-[480px] md:h-[550px]">
             <div className="p-4 pr-8 pb-10 h-full bg-white text-black font-pixel overflow-y-auto">
               <div className="inline-block bg-[#cc0000] text-white px-1.5 py-0 mb-6 border border-white outline outline-1 outline-[#cc0000]">
-                 <span className="text-3xl font-bold tracking-wide">Who is this guy?!?</span>
+                 <span className="text-3xl font-bold tracking-wide">{settings.aboutSubtitle || 'Who is this guy?!?'}</span>
               </div>
-              <p className="text-2xl leading-tight mb-5">
-                Hey, what's up? My name is Seyam and I've been working as a video editor for almost two years.
-              </p>
-              <p className="text-2xl leading-tight mb-5">
-                My focus is always to deliver engaging videos, with rhythm, narrative and identity, ensuring that each project has quality and retention.
-              </p>
-              <p className="text-2xl leading-tight">
-                I seek to transform ideas into content that really grabs attention and generates results.
-              </p>
+              {settings.aboutText ? (
+                settings.aboutText.split('\n').filter(p => p.trim()).map((para, i, arr) => (
+                  <p key={i} className={`text-2xl leading-tight ${i < arr.length - 1 ? 'mb-5' : ''}`}>
+                    {para}
+                  </p>
+                ))
+              ) : (
+                <>
+                  <p className="text-2xl leading-tight mb-5">
+                    Hey, what's up? My name is Seyam and I've been working as a video editor for almost two years.
+                  </p>
+                  <p className="text-2xl leading-tight mb-5">
+                    My focus is always to deliver engaging videos, with rhythm, narrative and identity, ensuring that each project has quality and retention.
+                  </p>
+                  <p className="text-2xl leading-tight">
+                    I seek to transform ideas into content that really grabs attention and generates results.
+                  </p>
+                </>
+              )}
 
               {/* Blinking typing cursor */}
               <div className="inline-block w-[10px] h-6 bg-black ml-1 animate-[blink_1s_infinite]"></div>
             </div>
             {/* The giant custom pointer cursor */}
-            <div className="absolute bottom-10 right-8 z-20" style={{ transform: 'rotate(-15deg)' }}>
+            <div className="absolute bottom-10 right-8 z-20 pointer-events-none" style={{ transform: 'rotate(-15deg)' }}>
                 <img src="https://api.iconify.design/pixelarticons:pointer.svg?color=%23000000" className="w-16 h-16 drop-shadow-[2px_2px_0px_white]" />
             </div>
           </RetroWindow>
@@ -120,17 +136,27 @@ export default function About() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="w-full md:w-[40%] flex flex-col gap-6 h-[550px]"
+          className="w-full md:w-[40%] flex flex-col gap-6 h-auto md:h-[550px]"
         >
           {/* Photo Window */}
-          <RetroWindow title="viewer.exe" className="flex-grow min-h-0">
+          <RetroWindow title="viewer.exe" className="h-[380px] md:h-auto md:flex-grow md:min-h-0">
              <div className="p-2 pr-6 pb-6 h-full bg-gray-200">
-               <div className="w-full h-full border-t-2 border-l-2 border-gray-600 border-b-2 border-r-2 border-white overflow-hidden bg-white">
-                 <img 
-                   src={settings.aboutPhotoUrl || "https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&q=80&w=400"} 
-                   alt="Profile" 
-                   className="w-full h-full object-cover grayscale mix-blend-luminosity brightness-90 contrast-125"
-                 />
+               <div className="w-full h-full border-t-2 border-l-2 border-gray-600 border-b-2 border-r-2 border-white overflow-hidden bg-[#111] flex items-center justify-center">
+                 {settings.aboutPhotoUrl ? (
+                   <img 
+                     src={settings.aboutPhotoUrl} 
+                     alt="Seyam Munshi" 
+                     className="w-full h-full object-cover grayscale mix-blend-luminosity brightness-90 contrast-125"
+                   />
+                 ) : (
+                   <div className="w-full h-full flex flex-col items-center justify-center bg-[#141414] text-white p-6 text-center select-none">
+                     <div className="w-16 h-16 rounded-full border border-white/20 bg-white/5 flex items-center justify-center mb-3">
+                       <span className="text-white text-xl font-bold font-sans">SM</span>
+                     </div>
+                     <span className="text-lg font-bold tracking-tight text-white font-sans">SEYAM MUNSHI</span>
+                     <span className="text-[11px] text-gray-400 font-sans uppercase tracking-widest mt-1">Video Editor</span>
+                   </div>
+                 )}
                </div>
              </div>
           </RetroWindow>
@@ -173,8 +199,8 @@ export default function About() {
                 <Star className="text-[#ff4444] w-6 h-6" />
              </div>
              <div className="flex flex-col">
-                <span className="text-white text-3xl md:text-4xl font-bold tracking-tight">2+</span>
-                <span className="text-gray-400 text-[11px] md:text-xs font-semibold tracking-widest mt-1 uppercase">Years Experience</span>
+                <span className="text-white text-3xl md:text-4xl font-bold tracking-tight">{settings.aboutStat1Num || '2+'}</span>
+                <span className="text-gray-400 text-[11px] md:text-xs font-semibold tracking-widest mt-1 uppercase">{settings.aboutStat1Text || 'Years Experience'}</span>
              </div>
           </div>
 
@@ -184,8 +210,8 @@ export default function About() {
                 <Briefcase className="text-gray-300 w-6 h-6" />
              </div>
              <div className="flex flex-col">
-                <span className="text-white text-3xl md:text-4xl font-bold tracking-tight">100+</span>
-                <span className="text-gray-400 text-[11px] md:text-xs font-semibold tracking-widest mt-1 uppercase">Projects Completed</span>
+                <span className="text-white text-3xl md:text-4xl font-bold tracking-tight">{settings.aboutStat2Num || '100+'}</span>
+                <span className="text-gray-400 text-[11px] md:text-xs font-semibold tracking-widest mt-1 uppercase">{settings.aboutStat2Text || 'Projects Completed'}</span>
              </div>
           </div>
 
@@ -195,8 +221,8 @@ export default function About() {
                 <Users className="text-gray-300 w-6 h-6" />
              </div>
              <div className="flex flex-col">
-                <span className="text-white text-3xl md:text-4xl font-bold tracking-tight">18+</span>
-                <span className="text-gray-400 text-[11px] md:text-xs font-semibold tracking-widest mt-1 uppercase">Happy Clients</span>
+                <span className="text-white text-3xl md:text-4xl font-bold tracking-tight">{settings.aboutStat3Num || '18+'}</span>
+                <span className="text-gray-400 text-[11px] md:text-xs font-semibold tracking-widest mt-1 uppercase">{settings.aboutStat3Text || 'Happy Clients'}</span>
              </div>
           </div>
 
@@ -206,8 +232,8 @@ export default function About() {
                 <Globe className="text-gray-300 w-6 h-6" />
              </div>
              <div className="flex flex-col">
-                <span className="text-white text-3xl md:text-4xl font-bold tracking-tight">5+</span>
-                <span className="text-gray-400 text-[11px] md:text-xs font-semibold tracking-widest mt-1 uppercase">Countries Worked</span>
+                <span className="text-white text-3xl md:text-4xl font-bold tracking-tight">{settings.aboutStat4Num || '5+'}</span>
+                <span className="text-gray-400 text-[11px] md:text-xs font-semibold tracking-widest mt-1 uppercase">{settings.aboutStat4Text || 'Countries Worked'}</span>
              </div>
           </div>
         </motion.div>
